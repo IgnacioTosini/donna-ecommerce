@@ -25,6 +25,7 @@ interface Props {
         category?: string;
         color?: string;
         featured?: string;
+        gender?: string;
         maxPrice?: string;
         sale?: string;
         size?: string;

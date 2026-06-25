@@ -11,6 +11,7 @@ import './_categoryPageView.scss';
 
 type CategoryFilters = {
     category?: string;
+    gender?: string;
     size?: string;
     color?: string;
     maxPrice?: string;
@@ -35,6 +36,12 @@ type Props = {
     filters: CategoryFilters;
 };
 
+const genderLabels: Record<string, string> = {
+    MEN: 'Hombre',
+    WOMEN: 'Mujer',
+    UNISEX: 'Unisex',
+};
+
 export const CategoryPageView = ({
     categories,
     products,
@@ -46,6 +53,14 @@ export const CategoryPageView = ({
     const activeCategory = categories.find(
         (category) => category.slug === filters.category
     );
+    const activeGenderName = filters.gender ? genderLabels[filters.gender] : undefined;
+    const headerCategory = activeCategory || activeGenderName
+        ? {
+            name: activeCategory?.name || activeGenderName || 'Productos',
+            slug: activeCategory?.slug,
+            description: activeCategory?.description,
+        }
+        : undefined;
     const pageRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
@@ -68,7 +83,7 @@ export const CategoryPageView = ({
 
     return (
         <main ref={pageRef} className="category-page">
-            <CategoryHeader activeCategory={activeCategory} />
+            <CategoryHeader activeCategory={headerCategory} />
             <div className="category-page-content">
                 <CategoryFilterSidebar
                     categories={categories}
@@ -83,6 +98,7 @@ export const CategoryPageView = ({
                         category: filters.category,
                         color: filters.color,
                         featured: filters.featured,
+                        gender: filters.gender,
                         maxPrice: filters.maxPrice,
                         sale: filters.sale,
                         size: filters.size,

@@ -1,5 +1,6 @@
 export type CategoryFilters = {
     category?: string;
+    gender?: string;
     size?: string;
     color?: string;
     maxPrice?: string;

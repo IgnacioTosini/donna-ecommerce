@@ -16,6 +16,8 @@
         gap: 2rem;
         width: 100%;
         margin-top: 2rem;
+        overflow: auto;
+        max-height: 800px;
 
         @media (max-width: 900px) {
             grid-template-columns: 1fr;

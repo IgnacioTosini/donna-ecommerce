@@ -2,10 +2,12 @@ import { getCategories } from "@/app/actions/category.action";
 import { getFilteredProducts, getPaginatedFilteredProducts } from "@/app/actions/product.action";
 import type { ProductSortOption } from "@/app/actions/product.action";
 import { CategoryPageView } from "@/components/sections/categoryPage/CategoryPageView";
+import { Gender } from "@prisma/client";
 import type { Metadata } from "next";
 
 type SearchParams = Promise<{
     category?: string;
+    gender?: string;
     size?: string;
     color?: string;
     maxPrice?: string;
@@ -22,6 +24,12 @@ const sortOptions: ProductSortOption[] = [
     "priceDesc",
     "featured",
 ];
+const genderLabels: Record<Gender, string> = {
+    MEN: "Hombre",
+    WOMEN: "Mujer",
+    UNISEX: "Unisex",
+};
+const genderOptions = Object.keys(genderLabels) as Gender[];
 
 const parseSort = (sort?: string): ProductSortOption =>
     sortOptions.includes(sort as ProductSortOption)
@@ -29,6 +37,10 @@ const parseSort = (sort?: string): ProductSortOption =>
         : "newest";
 
 const parseBooleanParam = (value?: string) => value === "true";
+const parseGender = (gender?: string): Gender | undefined =>
+    genderOptions.includes(gender as Gender)
+        ? (gender as Gender)
+        : undefined;
 const parsePositiveIntegerParam = (value?: string, fallback = 1) => {
     const numberValue = Number(value);
 
@@ -41,7 +53,8 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     const params = await searchParams;
     const categories = await getCategories();
     const category = categories.find((item) => item.slug === params.category);
-    const categoryName = category?.name ?? "Productos";
+    const gender = parseGender(params.gender);
+    const categoryName = category?.name ?? (gender ? genderLabels[gender] : "Productos");
     const title = params.sale
         ? `${categoryName} en rebaja`
         : params.featured
@@ -76,11 +89,13 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
     const params = await searchParams;
     const featured = parseBooleanParam(params.featured);
     const sale = parseBooleanParam(params.sale);
+    const gender = parseGender(params.gender);
     const page = parsePositiveIntegerParam(params.page);
     const pageSize = parsePositiveIntegerParam(params.pageSize, 10);
 
     const productFilters = {
         category: params.category,
+        gender,
         size: params.size,
         color: params.color,
         featured,
@@ -89,6 +104,7 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
     };
     const filterOptionProductsFilters = {
         category: params.category,
+        gender,
         featured,
         sale,
         sort: parseSort(params.sort),
@@ -120,6 +136,7 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
             }}
             filters={{
                 ...params,
+                gender,
                 featured: featured ? "true" : undefined,
                 sale: sale ? "true" : undefined,
             }}

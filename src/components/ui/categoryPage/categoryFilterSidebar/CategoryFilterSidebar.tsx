@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { Category, ProductWithRelations } from '@/types';
 import { CategoryFilterSection } from './categoryFilterSection/CategoryFilterSection';
 import { ColorFilterSection } from './colorFilterSection/ColorFilterSection';
+import { GenderFilterSection } from './genderFilterSection/GenderFilterSection';
 import { PriceFilterSection } from './priceFilterSection/PriceFilterSection';
 import { SizeFilterSection } from './sizeFilterSection/SizeFilterSection';
 import { CategoryFilters } from './categoryFilterSidebar.types';
@@ -94,6 +95,10 @@ export const CategoryFilterSidebar = ({
 
     return (
         <aside className="category-filter-sidebar">
+            <GenderFilterSection
+                filters={filters}
+                buildFilterHref={buildFilterHref}
+            />
             <CategoryFilterSection
                 categories={categories}
                 filters={filters}

@@ -9,8 +9,9 @@ type NavigationItem = {
 };
 
 export const navigationItems: readonly NavigationItem[] = [
-    { id: 'women', label: 'Mujer', href: '/categoria?category=mujer', sectionId: '' },
-    { id: 'men', label: 'Hombre', href: '/categoria?category=hombre', sectionId: '' },
+    { id: 'women', label: 'Mujer', href: '/categoria?gender=WOMEN', sectionId: '' },
+    { id: 'men', label: 'Hombre', href: '/categoria?gender=MEN', sectionId: '' },
+    { id: 'unisex', label: 'Unisex', href: '/categoria?gender=UNISEX', sectionId: '' },
     { id: 'new', label: 'Nuevos', href: '/categoria?sort=newest', sectionId: '' },
 ];
 

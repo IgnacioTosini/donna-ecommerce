@@ -49,6 +49,9 @@ export const PriceFilterSection = ({
                 {filters.category && (
                     <input type="hidden" name="category" value={filters.category} />
                 )}
+                {filters.gender && (
+                    <input type="hidden" name="gender" value={filters.gender} />
+                )}
                 {filters.size && (
                     <input type="hidden" name="size" value={filters.size} />
                 )}

@@ -14,63 +14,71 @@ export const CategoryFilterSection = ({
     filters,
     buildFilterHref,
 }: Props) => (
-    <div className="category-filter-section">
-        <h2 className="category-filter-sidebar-title">Categoría</h2>
-        <ul className="category-filter-sidebar-list">
-            {categories.map((category) => (
-                <li key={category.id} className="category-filter-sidebar-item">
+    <>
+        <div className="category-filter-section">
+            <h2 className="category-filter-sidebar-title">Categoría</h2>
+            <ul className="category-filter-sidebar-list">
+                {categories.map((category) => (
+                    <li key={category.id} className="category-filter-sidebar-item">
+                        <Link
+                            href={buildFilterHref(
+                                {
+                                    category: filters.category === category.slug
+                                        ? undefined
+                                        : category.slug,
+                                },
+                                { resetPrice: true }
+                            )}
+                            scroll={false}
+                            className={`category-filter-sidebar-link ${filters.category === category.slug ? 'is-active' : ''}`}
+                        >
+                            {category.name}
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </div>
+
+        <div className="category-filter-section">
+            <h2 className="category-filter-sidebar-title">Colección</h2>
+            <ul className="category-filter-sidebar-list">
+                <li className="category-filter-sidebar-item">
                     <Link
                         href={buildFilterHref(
-                            {
-                                category: filters.category === category.slug
-                                    ? undefined
-                                    : category.slug,
-                            },
+                            { sort: filters.sort === 'newest' ? undefined : 'newest' },
                             { resetPrice: true }
                         )}
                         scroll={false}
-                        className={`category-filter-sidebar-link ${filters.category === category.slug ? 'is-active' : ''}`}
+                        className={`category-filter-sidebar-link ${filters.sort === 'newest' ? 'is-active' : ''}`}
                     >
-                        {category.name}
+                        Nuevos Ingresos
                     </Link>
                 </li>
-            ))}
-            <li className="category-filter-sidebar-item">
-                <Link
-                    href={buildFilterHref(
-                        { sort: filters.sort === 'newest' ? undefined : 'newest' },
-                        { resetPrice: true }
-                    )}
-                    scroll={false}
-                    className={`category-filter-sidebar-link ${filters.sort === 'newest' ? 'is-active' : ''}`}
-                >
-                    Nuevos Ingresos
-                </Link>
-            </li>
-            <li className="category-filter-sidebar-item">
-                <Link
-                    href={buildFilterHref(
-                        { featured: filters.featured ? undefined : 'true' },
-                        { resetPrice: true }
-                    )}
-                    scroll={false}
-                    className={`category-filter-sidebar-link ${filters.featured ? 'is-active' : ''}`}
-                >
-                    Destacados
-                </Link>
-            </li>
-            <li className="category-filter-sidebar-item">
-                <Link
-                    href={buildFilterHref(
-                        { sale: filters.sale ? undefined : 'true' },
-                        { resetPrice: true }
-                    )}
-                    scroll={false}
-                    className={`category-filter-sidebar-link ${filters.sale ? 'is-active' : ''}`}
-                >
-                    Rebajas
-                </Link>
-            </li>
-        </ul>
-    </div>
+                <li className="category-filter-sidebar-item">
+                    <Link
+                        href={buildFilterHref(
+                            { featured: filters.featured ? undefined : 'true' },
+                            { resetPrice: true }
+                        )}
+                        scroll={false}
+                        className={`category-filter-sidebar-link ${filters.featured ? 'is-active' : ''}`}
+                    >
+                        Destacados
+                    </Link>
+                </li>
+                <li className="category-filter-sidebar-item">
+                    <Link
+                        href={buildFilterHref(
+                            { sale: filters.sale ? undefined : 'true' },
+                            { resetPrice: true }
+                        )}
+                        scroll={false}
+                        className={`category-filter-sidebar-link ${filters.sale ? 'is-active' : ''}`}
+                    >
+                        Rebajas
+                    </Link>
+                </li>
+            </ul>
+        </div>
+    </>
 );

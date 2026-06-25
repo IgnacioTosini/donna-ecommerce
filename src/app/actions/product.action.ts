@@ -7,7 +7,7 @@ import { CreateProductDto } from '@/schemas';
 import { ProductWithRelations } from '@/types';
 import { normalizeColorValue } from '@/utils/colorHelpers';
 import { normalizeSizeValue } from '@/utils/sizeHelpers';
-import type { Prisma } from '@prisma/client';
+import { Gender, type Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
 const PRODUCT_REVALIDATION_PATHS = [
@@ -561,6 +561,7 @@ export type ProductSortOption = 'newest' | 'priceAsc' | 'priceDesc' | 'featured'
 
 type ProductFilters = {
     category?: string;
+    gender?: Gender;
     size?: string;
     color?: string;
     maxPrice?: number;
@@ -605,6 +606,7 @@ const buildFilteredProductsOrderBy = (
 
 const buildFilteredProductsWhere = ({
     category,
+    gender,
     size,
     color,
     maxPrice,
@@ -624,6 +626,11 @@ const buildFilteredProductsWhere = ({
                 category: {
                     slug: categorySlug,
                 },
+            }
+            : {}),
+        ...(gender
+            ? {
+                gender,
             }
             : {}),
         ...(hasMaxPrice
