@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-/* import { animateFooter } from '@/components/animations/gsap/footerAnimations'; */
+import { animateFooter } from '@/components/animations/gsap/sectionAnimations';
 import { IoLogoInstagram, IoLogoWhatsapp } from 'react-icons/io';
 import { navigationItems } from '@/utils/navigationItems';
 import { handleSectionNavigation } from '@/utils/navigationHelpers';
@@ -26,7 +26,7 @@ export default function Footer() {
     if (!footerRef.current) return;
 
     const ctx = gsap.context(() => {
-      /* animateFooter(footerRef.current!); */
+      animateFooter(footerRef.current!);
     }, footerRef.current);
 
     return () => ctx.revert();

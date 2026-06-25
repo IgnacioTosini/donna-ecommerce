@@ -1,6 +1,11 @@
+'use client';
+
 import { FaTruck } from 'react-icons/fa';
 import { TfiReload } from "react-icons/tfi";
 import { CiHeadphones } from 'react-icons/ci';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { animateCardGrid } from '@/components/animations/gsap/sectionAnimations';
 import './_infoSection.scss';
 
 const infoItems = [
@@ -22,8 +27,23 @@ const infoItems = [
 ]
 
 export const InfoSection = () => {
+    const sectionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const ctx = gsap.context(() => {
+            animateCardGrid(sectionRef.current!, '.info-item', {
+                stagger: 0.1,
+                y: 22,
+            });
+        }, sectionRef.current);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <div className="info-section">
+        <div ref={sectionRef} className="info-section">
             <div className="info-wrapper">
                 {
                     infoItems.map((item, index) => (

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BuildFilterHref, CategoryFilters } from '../categoryFilterSidebar.types';
+import { colorsMatch, normalizeColorValue } from '@/utils/colorHelpers';
 import './_colorFilterSection.scss';
 
 type Props = {
@@ -19,7 +20,7 @@ export const ColorFilterSection = ({
     disabledColors = [],
     onSelectColor,
 }: Props) => {
-    const disabledColorSet = new Set(disabledColors);
+    const disabledColorSet = new Set(disabledColors.map(normalizeColorValue));
     const activeColor = selectedColor ?? filters.color;
 
     return (
@@ -27,8 +28,9 @@ export const ColorFilterSection = ({
             <h2 className="category-filter-sidebar-title">Color</h2>
             <ul className="category-filter-color-list">
                 {colors.map((color) => {
-                    const isActive = activeColor === color;
-                    const isDisabled = disabledColorSet.has(color);
+                    const normalizedColor = normalizeColorValue(color) ?? color;
+                    const isActive = colorsMatch(activeColor, color);
+                    const isDisabled = disabledColorSet.has(normalizedColor);
                     const className = `category-filter-color ${isActive ? 'is-active' : ''}`;
 
                     return (
@@ -36,16 +38,17 @@ export const ColorFilterSection = ({
                             {buildFilterHref ? (
                                 <Link
                                     href={buildFilterHref(
-                                        { color: filters.color === color ? undefined : color },
+                                        { color: colorsMatch(filters.color, color) ? undefined : normalizedColor },
                                         { resetPrice: true }
                                     )}
+                                    scroll={false}
                                     className={className}
                                     aria-label={`Filtrar por color ${color}`}
                                     aria-current={isActive ? 'true' : undefined}
                                 >
                                     <span
                                         className="color-swatch"
-                                        style={{ backgroundColor: color }}
+                                        style={{ backgroundColor: normalizedColor }}
                                     />
                                 </Link>
                             ) : (
@@ -55,11 +58,11 @@ export const ColorFilterSection = ({
                                     disabled={isDisabled}
                                     aria-label={`Seleccionar color ${color}`}
                                     aria-pressed={isActive}
-                                    onClick={() => onSelectColor?.(color)}
+                                    onClick={() => onSelectColor?.(normalizedColor)}
                                 >
                                     <span
                                         className="color-swatch"
-                                        style={{ backgroundColor: color }}
+                                        style={{ backgroundColor: normalizedColor }}
                                     />
                                 </button>
                             )}

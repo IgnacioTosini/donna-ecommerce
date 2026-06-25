@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import gsap from 'gsap';
 import { ProductWithRelations } from '@/types'
 import { ProductGallery } from '../productGallery/ProductGallery';
 import { Breadcrumb } from '@/components/shared/breadcrumb/Breadcrumb';
@@ -12,31 +13,28 @@ import { CheckoutModal } from '@/components/checkout/CheckoutModal/CheckoutModal
 import { handleWhatsappCheckout } from '@/helpers/whatsapp/handleWhatsappCheckout';
 import { CheckoutData } from '@/types/checkout.types';
 import { toast } from 'react-toastify';
+import { animateProductDetails } from '@/components/animations/gsap/sectionAnimations';
+import { colorsMatch, normalizeColorValue } from '@/utils/colorHelpers';
+import { sortProductSizes, sizesMatch } from '@/utils/sizeHelpers';
 import './_productDetails.scss'
 
 interface Props {
     product: ProductWithRelations;
 }
 
-const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
-const sortSizes = (sizes: string[]) => [...sizes].sort((a, b) => {
-    const aIndex = sizeOrder.indexOf(a);
-    const bIndex = sizeOrder.indexOf(b);
-
-    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
-
-    return aIndex - bIndex;
-});
-
 export const ProductDetails = ({ product }: Props) => {
+    const sectionRef = useRef<HTMLDivElement>(null);
     const addItem = useCartStore((state) => state.addItem);
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     const [buyNowItem, setBuyNowItem] = useState<CartItem | null>(null);
     const colors = useMemo(
-        () => [...new Set(product.variants.map((variant) => variant.colorHex))].sort(),
+        () => [
+            ...new Set(
+                product.variants
+                    .map((variant) => normalizeColorValue(variant.colorHex))
+                    .filter((color): color is string => Boolean(color))
+            ),
+        ].sort(),
         [product.variants]
     );
 
@@ -49,19 +47,19 @@ export const ProductDetails = ({ product }: Props) => {
     const [selectedColor, setSelectedColor] = useState(firstAvailableVariant?.colorHex ?? colors[0] ?? '');
 
     const selectedVariant = useMemo(
-        () => product.variants.find((variant) => variant.colorHex === selectedColor) ?? firstAvailableVariant,
+        () => product.variants.find((variant) => colorsMatch(variant.colorHex, selectedColor)) ?? firstAvailableVariant,
         [firstAvailableVariant, product.variants, selectedColor]
     );
 
     const sizes = useMemo(() => {
         const variantSizes = selectedVariant?.sizes.map((size) => size.size) ?? [];
 
-        return sortSizes([...new Set(variantSizes)]);
+        return sortProductSizes([...new Set(variantSizes)]);
     }, [selectedVariant]);
 
     const firstAvailableSize = useMemo(
         () => sizes.find((size) =>
-            selectedVariant?.sizes.some((variantSize) => variantSize.size === size && variantSize.stock > 0)
+            selectedVariant?.sizes.some((variantSize) => sizesMatch(variantSize.size, size) && variantSize.stock > 0)
         ) ?? sizes[0] ?? '',
         [selectedVariant, sizes]
     );
@@ -71,17 +69,17 @@ export const ProductDetails = ({ product }: Props) => {
     const disabledColors = useMemo(
         () => product.variants
             .filter((variant) => variant.sizes.every((size) => size.stock <= 0))
-            .map((variant) => variant.colorHex),
+            .map((variant) => normalizeColorValue(variant.colorHex) ?? variant.colorHex),
         [product.variants]
     );
 
     const disabledSizes = useMemo(
         () => sizes.filter((size) =>
-            !selectedVariant?.sizes.some((variantSize) => variantSize.size === size && variantSize.stock > 0)
+            !selectedVariant?.sizes.some((variantSize) => sizesMatch(variantSize.size, size) && variantSize.stock > 0)
         ),
         [selectedVariant, sizes]
     );
-    const selectedSizeStock = selectedVariant?.sizes.find((size) => size.size === selectedSize);
+    const selectedSizeStock = selectedVariant?.sizes.find((size) => sizesMatch(size.size, selectedSize));
     const availableStock = selectedSizeStock?.stock ?? 0;
     const isAddToCartDisabled = !selectedColor || !selectedSize || availableStock <= 0;
 
@@ -107,10 +105,10 @@ export const ProductDetails = ({ product }: Props) => {
     const handleColorSelect = (color: string) => {
         setSelectedColor(color);
 
-        const nextVariant = product.variants.find((variant) => variant.colorHex === color);
-        const nextSizes = sortSizes([...new Set(nextVariant?.sizes.map((size) => size.size) ?? [])]);
+        const nextVariant = product.variants.find((variant) => colorsMatch(variant.colorHex, color));
+        const nextSizes = sortProductSizes([...new Set(nextVariant?.sizes.map((size) => size.size) ?? [])]);
         const nextAvailableSize = nextSizes.find((size) =>
-            nextVariant?.sizes.some((variantSize) => variantSize.size === size && variantSize.stock > 0)
+            nextVariant?.sizes.some((variantSize) => sizesMatch(variantSize.size, size) && variantSize.stock > 0)
         ) ?? nextSizes[0] ?? '';
 
         setSelectedSize(nextAvailableSize);
@@ -157,8 +155,18 @@ export const ProductDetails = ({ product }: Props) => {
         return true;
     };
 
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const ctx = gsap.context(() => {
+            animateProductDetails(sectionRef.current!);
+        }, sectionRef.current);
+
+        return () => ctx.revert();
+    }, [product.id]);
+
     return (
-        <div className="product-details">
+        <div ref={sectionRef} className="product-details">
             <div className="product-details-container">
                 <Breadcrumb activeCategory={product.category} productName={product.name} />
                 <div className='product-details-content'>

@@ -11,6 +11,7 @@ import { SortDirection, useSortableTable } from '@/hooks/useSortableTable';
 import { useBannerModalStore } from '@/store/banner.store';
 import { deleteBannerWithImage } from '@/app/actions/banner.action';
 import './_bannersTable.scss';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     banners: Banner[];
@@ -34,6 +35,7 @@ const SortableHeader = ({
 );
 
 export const BannersTable = ({ banners }: Props) => {
+    const router = useRouter();
     const openEditBanner = useBannerModalStore((state) => state.openEdit);
 
     const {
@@ -55,6 +57,7 @@ export const BannersTable = ({ banners }: Props) => {
 
         if (result.ok) {
             toast.success('Banner eliminado');
+            router.refresh();
         } else {
             toast.error(result.message ?? 'Error al eliminar banner');
         }

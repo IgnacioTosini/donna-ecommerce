@@ -11,6 +11,7 @@ import { SearchBar } from '@/components/shared/searchBar/SearchBar';
 import { useSearch } from '@/hooks/useSearch';
 import { SortDirection, useSortableTable } from '@/hooks/useSortableTable';
 import './_productsTable.scss';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     products: ProductWithRelations[];
@@ -34,6 +35,7 @@ const SortableHeader = ({
 );
 
 export const ProductsTable = ({ products }: Props) => {
+    const router = useRouter();
     const openEditProduct = useProductModalStore((state) => state.openEdit);
     const {
         query,
@@ -53,6 +55,7 @@ export const ProductsTable = ({ products }: Props) => {
 
         if (result.ok) {
             toast.success('Producto eliminado');
+            router.refresh();
         } else {
             toast.error('Error al eliminar producto');
         }

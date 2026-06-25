@@ -1,7 +1,12 @@
+'use client';
+
 import { Category } from '@/types';
 import { Title } from '@/components/shared/Title/Title';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { animateCardGrid, animateSectionReveal } from '@/components/animations/gsap/sectionAnimations';
 import './_categories.scss';
 
 interface Props {
@@ -9,8 +14,24 @@ interface Props {
 }
 
 export const Categories = ({ categories }: Props) => {
+    const sectionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const ctx = gsap.context(() => {
+            animateSectionReveal(sectionRef.current!, '.title-container');
+            animateCardGrid(sectionRef.current!, '.category-card', {
+                stagger: 0.09,
+                y: 30,
+            });
+        }, sectionRef.current);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <div className="categories-section">
+        <div ref={sectionRef} className="categories-section">
             <div className="categories-wrapper">
                 <Title title='Categorías' subTitle='Explora la colección' />
                 <div className="categories-list">

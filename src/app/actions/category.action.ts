@@ -6,6 +6,17 @@ import { serializePrisma } from '@/lib/serializePrisma';
 import { CreateCategoryDto } from '@/schemas';
 import { revalidatePath } from 'next/cache';
 
+const CATEGORY_REVALIDATION_PATHS = [
+    '/admin/categorias',
+    '/',
+    '/categoria',
+    '/sitemap.xml',
+];
+
+function revalidateCategoryPaths() {
+    CATEGORY_REVALIDATION_PATHS.forEach((path) => revalidatePath(path));
+}
+
 type UploadedImage = {
     url: string;
     publicId: string;
@@ -30,7 +41,7 @@ export async function createCategoryWithImage({
             },
         });
 
-        revalidatePath('/dashboard/categories');
+        revalidateCategoryPaths();
 
         return {
             ok: true,
@@ -96,10 +107,7 @@ export async function updateCategoryWithImage(
                     },
                 });
 
-            revalidatePath('/dashboard/categories');
-            revalidatePath(
-                `/dashboard/categories/${categoryId}`
-            );
+            revalidateCategoryPaths();
 
             return {
                 ok: true,
@@ -162,7 +170,7 @@ export async function deleteCategoryWithImage(
                 },
             });
 
-            revalidatePath('/dashboard/categories');
+            revalidateCategoryPaths();
 
             return {
                 ok: true,

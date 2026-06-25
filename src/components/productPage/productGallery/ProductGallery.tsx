@@ -2,7 +2,8 @@
 
 import { ProductImage } from '@/types';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
 import './_productGallery.scss';
 
 interface Props {
@@ -10,8 +11,27 @@ interface Props {
 }
 
 export const ProductGallery = ({ images }: Props) => {
+    const mainImageRef = useRef<HTMLDivElement>(null);
     const [activeImageId, setActiveImageId] = useState(images[0]?.id);
     const activeImage = images.find((image) => image.id === activeImageId) ?? images[0];
+
+    useEffect(() => {
+        if (!mainImageRef.current) return;
+
+        gsap.fromTo(
+            mainImageRef.current,
+            {
+                opacity: 0.8,
+                scale: 0.985,
+            },
+            {
+                opacity: 1,
+                scale: 1,
+                duration: 0.45,
+                ease: 'power2.out',
+            }
+        );
+    }, [activeImageId]);
 
     if (!activeImage) {
         return (
@@ -44,7 +64,7 @@ export const ProductGallery = ({ images }: Props) => {
                 ))}
             </div>
 
-            <div className="product-gallery-main">
+            <div ref={mainImageRef} className="product-gallery-main">
                 <Image
                     src={activeImage.url}
                     alt="Imagen principal del producto"

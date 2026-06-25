@@ -1,11 +1,35 @@
+'use client';
+
 import { Title } from '@/components/shared/Title/Title';
 import { FaArrowRight, FaInstagram, FaMapMarkerAlt } from 'react-icons/fa';
 import { CiClock2 } from 'react-icons/ci';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { animateSectionReveal } from '@/components/animations/gsap/sectionAnimations';
 import './_aboutUs.scss';
 
 export const AboutUs = () => {
+    const sectionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!sectionRef.current) return;
+
+        const ctx = gsap.context(() => {
+            animateSectionReveal(
+                sectionRef.current!,
+                '.title-container, .about-us-description, .about-us-visit',
+                {
+                    stagger: 0.1,
+                    y: 28,
+                }
+            );
+        }, sectionRef.current);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <div className="about-us-section">
+        <div ref={sectionRef} className="about-us-section">
             <div className="about-us-container">
                 <Title title='Nuestra esencia' subTitle='Conoce DONNA' />
                 <div className="about-us-content">
@@ -13,7 +37,7 @@ export const AboutUs = () => {
                         <h3 className="about-us-title">Más que una tienda</h3>
                         <p className="about-us-text">DONNA nació en Río Segundo, Córdoba, como un espacio dedicado a quienes buscan calzado y ropa con identidad. Seleccionamos cada pieza pensando en la versatilidad, el confort y ese detalle que marca la diferencia. Nuestras colecciones mezclan tendencias actuales con propuestas atemporales, ideales para armar looks propios.</p>
                         <p className="about-us-text">Trabajamos con nuevos drops constantes, cuotas sin interés y envíos a todo el país para que tu próximo outfit esté siempre a un click.</p>
-                        <button className="about-us-button">VER NUEVOS INGRESOS <FaArrowRight className='about-us-button-icon' /></button>
+                        <button className="about-us-button" onClick={() => window.location.href = '/categoria?sort=newest'}>VER NUEVOS INGRESOS <FaArrowRight className='about-us-button-icon' /></button>
                     </div>
                     <div className="about-us-visit">
                         <h3 className="about-us-title">Visitá DONNA</h3>
@@ -32,7 +56,9 @@ export const AboutUs = () => {
                                 <p className='about-us-hours-line'>9:00 a 13:00 hs | 17:00 a 21:00 hs</p>
                             </div>
                         </div>
-                        <button className="about-us-button"><FaInstagram className='about-us-button-icon' />CONTACTO</button>
+                        <a href='https://www.instagram.com/donna_rio/' target='_blank' rel='noopener noreferrer' className="about-us-button">
+                            <FaInstagram className='about-us-button-icon' />CONTACTO
+                        </a>
                     </div>
                 </div>
             </div>

@@ -4,7 +4,12 @@ import { ProductWithRelations } from '@/types';
 import Image from 'next/image';
 import { IoBagHandleOutline } from 'react-icons/io5';
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { useCartStore } from '@/store/cart.store';
+import { animateCardGrid } from '@/components/animations/gsap/sectionAnimations';
+import { colorsMatch, normalizeColorValue } from '@/utils/colorHelpers';
+import { normalizeSizeValue, sizesMatch } from '@/utils/sizeHelpers';
 import './_productsGrid.scss';
 
 interface Props {
@@ -16,6 +21,7 @@ interface Props {
 }
 
 export const ProductsGrid = ({ products, filters = {} }: Props) => {
+    const gridRef = useRef<HTMLDivElement>(null);
     const addItem = useCartStore((state) => state.addItem);
     const genderLabels = {
         MEN: 'HOMBRE',
@@ -30,16 +36,16 @@ export const ProductsGrid = ({ products, filters = {} }: Props) => {
     }
 
     const getCartSelection = (product: ProductWithRelations) => {
-        const selectedColor = filters.color?.trim();
-        const selectedSize = filters.size?.trim().toUpperCase();
+        const selectedColor = normalizeColorValue(filters.color);
+        const selectedSize = normalizeSizeValue(filters.size);
 
         const matchingVariants = selectedColor
-            ? product.variants.filter((variant) => variant.colorHex === selectedColor)
+            ? product.variants.filter((variant) => colorsMatch(variant.colorHex, selectedColor))
             : product.variants;
 
         for (const variant of matchingVariants) {
             const sizeStock = selectedSize
-                ? variant.sizes.find((size) => size.size === selectedSize && size.stock > 0)
+                ? variant.sizes.find((size) => sizesMatch(size.size, selectedSize) && size.stock > 0)
                 : variant.sizes.find((size) => size.stock > 0);
 
             if (sizeStock) {
@@ -50,7 +56,7 @@ export const ProductsGrid = ({ products, filters = {} }: Props) => {
         if (selectedColor || selectedSize) {
             for (const variant of product.variants) {
                 const sizeStock = selectedSize
-                    ? variant.sizes.find((size) => size.size === selectedSize && size.stock > 0)
+                    ? variant.sizes.find((size) => sizesMatch(size.size, selectedSize) && size.stock > 0)
                     : variant.sizes.find((size) => size.stock > 0);
 
                 if (sizeStock) {
@@ -86,8 +92,21 @@ export const ProductsGrid = ({ products, filters = {} }: Props) => {
         });
     };
 
+    useEffect(() => {
+        if (!gridRef.current) return;
+
+        const ctx = gsap.context(() => {
+            animateCardGrid(gridRef.current!, '.product-card', {
+                stagger: 0.09,
+                y: 26,
+            });
+        }, gridRef.current);
+
+        return () => ctx.revert();
+    }, [products, filters.color, filters.size]);
+
     return (
-        <div className="products-grid">
+        <div ref={gridRef} className="products-grid">
             {products.map((product) => {
                 const primaryImage = product.images[0];
                 const hoverImage = product.images[1] ?? primaryImage;

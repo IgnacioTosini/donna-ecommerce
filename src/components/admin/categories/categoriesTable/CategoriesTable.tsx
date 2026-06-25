@@ -9,6 +9,7 @@ import { useSearch } from '@/hooks/useSearch';
 import { SortDirection, useSortableTable } from '@/hooks/useSortableTable';
 import './_categoriesTable.scss';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     categories: Category[];
@@ -32,6 +33,7 @@ const SortableHeader = ({
 );
 
 export const CategoriesTable = ({ categories }: Props) => {
+    const router = useRouter();
     const {
         query,
         setQuery,
@@ -65,6 +67,7 @@ export const CategoriesTable = ({ categories }: Props) => {
 
         if (result.ok) {
             toast.success('Categoría eliminada');
+            router.refresh();
         } else {
             toast.error('Error al eliminar categoría');
         }

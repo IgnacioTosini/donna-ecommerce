@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BuildFilterHref, CategoryFilters } from '../categoryFilterSidebar.types';
+import { normalizeSizeValue, sizesMatch } from '@/utils/sizeHelpers';
 import './_sizeFilterSection.scss';
 
 type Props = {
@@ -19,7 +20,7 @@ export const SizeFilterSection = ({
     disabledSizes = [],
     onSelectSize,
 }: Props) => {
-    const disabledSizeSet = new Set(disabledSizes);
+    const disabledSizeSet = new Set(disabledSizes.map(normalizeSizeValue));
     const activeSize = selectedSize ?? filters.size;
 
     return (
@@ -27,8 +28,9 @@ export const SizeFilterSection = ({
             <h2 className="category-filter-sidebar-title">Talla</h2>
             <ul className="category-filter-size-list">
                 {sizes.map((size) => {
-                    const isActive = activeSize === size;
-                    const isDisabled = disabledSizeSet.has(size);
+                    const normalizedSize = normalizeSizeValue(size) ?? size;
+                    const isActive = sizesMatch(activeSize, size);
+                    const isDisabled = disabledSizeSet.has(normalizedSize);
                     const className = `category-filter-size ${isActive ? 'is-active' : ''}`;
 
                     return (
@@ -36,9 +38,10 @@ export const SizeFilterSection = ({
                             {buildFilterHref ? (
                                 <Link
                                     href={buildFilterHref(
-                                        { size: filters.size === size ? undefined : size },
+                                        { size: sizesMatch(filters.size, size) ? undefined : normalizedSize },
                                         { resetPrice: true }
                                     )}
+                                    scroll={false}
                                     className={className}
                                     aria-current={isActive ? 'true' : undefined}
                                 >

@@ -28,6 +28,7 @@ export const CategoryFilterSection = ({
                             },
                             { resetPrice: true }
                         )}
+                        scroll={false}
                         className={`category-filter-sidebar-link ${filters.category === category.slug ? 'is-active' : ''}`}
                     >
                         {category.name}
@@ -40,6 +41,7 @@ export const CategoryFilterSection = ({
                         { sort: filters.sort === 'newest' ? undefined : 'newest' },
                         { resetPrice: true }
                     )}
+                    scroll={false}
                     className={`category-filter-sidebar-link ${filters.sort === 'newest' ? 'is-active' : ''}`}
                 >
                     Nuevos Ingresos
@@ -51,6 +53,7 @@ export const CategoryFilterSection = ({
                         { featured: filters.featured ? undefined : 'true' },
                         { resetPrice: true }
                     )}
+                    scroll={false}
                     className={`category-filter-sidebar-link ${filters.featured ? 'is-active' : ''}`}
                 >
                     Destacados
@@ -62,6 +65,7 @@ export const CategoryFilterSection = ({
                         { sale: filters.sale ? undefined : 'true' },
                         { resetPrice: true }
                     )}
+                    scroll={false}
                     className={`category-filter-sidebar-link ${filters.sale ? 'is-active' : ''}`}
                 >
                     Rebajas

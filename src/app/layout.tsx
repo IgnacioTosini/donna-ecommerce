@@ -62,6 +62,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: [
+    {
+      rel: "icon",
+      url: "/logo.jpg",
+    },
+  ],
 };
 
 export default function RootLayout({

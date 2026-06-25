@@ -5,8 +5,25 @@ import { prisma } from '@/lib/prisma';
 import { serializePrisma } from '@/lib/serializePrisma';
 import { CreateProductDto } from '@/schemas';
 import { ProductWithRelations } from '@/types';
+import { normalizeColorValue } from '@/utils/colorHelpers';
+import { normalizeSizeValue } from '@/utils/sizeHelpers';
 import type { Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+
+const PRODUCT_REVALIDATION_PATHS = [
+    '/admin/productos',
+    '/',
+    '/categoria',
+    '/sitemap.xml',
+];
+
+function revalidateProductPaths(slugs: Array<string | null | undefined> = []) {
+    PRODUCT_REVALIDATION_PATHS.forEach((path) => revalidatePath(path));
+
+    Array.from(new Set(slugs.filter(Boolean))).forEach((slug) => {
+        revalidatePath(`/producto/${slug}`);
+    });
+}
 
 export type ExistingImage = {
     id: string;
@@ -64,7 +81,7 @@ export async function createProductWithImages({
                 variants: {
                     create: data.variants.map((variant) => ({
                         name: variant.name,
-                        colorHex: variant.colorHex,
+                        colorHex: normalizeColorValue(variant.colorHex) ?? variant.colorHex,
                         sizes: {
                             create: variant.sizes.map((size) => ({
                                 size: size.size,
@@ -87,7 +104,7 @@ export async function createProductWithImages({
             },
         });
 
-        revalidatePath('/admin/products');
+        revalidateProductPaths([product.slug]);
 
         return {
             ok: true,
@@ -182,6 +199,22 @@ export async function getProductBySlug(productSlug: string) {
 export async function deleteProductWithImages(productId: string) {
     try {
         return await prisma.$transaction(async (tx) => {
+            const product = await tx.product.findUnique({
+                where: {
+                    id: productId,
+                },
+                select: {
+                    slug: true,
+                },
+            });
+
+            if (!product) {
+                return {
+                    ok: false,
+                    message: 'Producto no encontrado',
+                };
+            }
+
             const images = await tx.productImage.findMany({
                 where: {
                     productId,
@@ -198,7 +231,7 @@ export async function deleteProductWithImages(productId: string) {
                 },
             });
 
-            revalidatePath('/admin/products');
+            revalidateProductPaths([product.slug]);
 
             return {
                 ok: true,
@@ -222,6 +255,22 @@ export async function updateProductWithImages(
 ) {
     try {
         return await prisma.$transaction(async (tx) => {
+            const currentProduct = await tx.product.findUnique({
+                where: {
+                    id: productId,
+                },
+                select: {
+                    slug: true,
+                },
+            });
+
+            if (!currentProduct) {
+                return {
+                    ok: false,
+                    message: 'Producto no encontrado',
+                };
+            }
+
             const currentImages = await tx.productImage.findMany({
                 where: {
                     productId,
@@ -310,7 +359,7 @@ export async function updateProductWithImages(
                     await tx.productVariant.create({
                         data: {
                             name: variant.name,
-                            colorHex: variant.colorHex,
+                            colorHex: normalizeColorValue(variant.colorHex) ?? variant.colorHex,
                             productId,
                             sizes: {
                                 create: variant.sizes.map((size) => ({
@@ -331,7 +380,7 @@ export async function updateProductWithImages(
                     },
                     data: {
                         name: variant.name,
-                        colorHex: variant.colorHex,
+                        colorHex: normalizeColorValue(variant.colorHex) ?? variant.colorHex,
                     },
                 });
 
@@ -456,8 +505,7 @@ export async function updateProductWithImages(
                 },
             });
 
-            revalidatePath('/admin/products');
-            revalidatePath(`/admin/products/${productId}`);
+            revalidateProductPaths([currentProduct.slug, product?.slug]);
 
             return {
                 ok: true,
@@ -531,8 +579,8 @@ export async function getFilteredProducts({
     sort = 'newest',
 }: ProductFilters) {
     const categorySlug = category?.trim().toLowerCase();
-    const selectedSize = size?.trim().toUpperCase();
-    const selectedColor = color?.trim();
+    const selectedSize = normalizeSizeValue(size);
+    const selectedColor = normalizeColorValue(color);
     const hasMaxPrice =
         typeof maxPrice === 'number' && Number.isFinite(maxPrice);
 
@@ -577,7 +625,10 @@ export async function getFilteredProducts({
             some: {
                 ...(selectedColor
                     ? {
-                        colorHex: selectedColor,
+                        colorHex: {
+                            equals: selectedColor,
+                            mode: 'insensitive',
+                        },
                     }
                     : {}),
                 sizes: {

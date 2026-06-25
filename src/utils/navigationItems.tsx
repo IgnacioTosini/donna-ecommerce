@@ -11,7 +11,7 @@ type NavigationItem = {
 export const navigationItems: readonly NavigationItem[] = [
     { id: 'women', label: 'Mujer', href: '/categoria?category=mujer', sectionId: '' },
     { id: 'men', label: 'Hombre', href: '/categoria?category=hombre', sectionId: '' },
-    { id: 'new', label: 'Nuevos', href: '/categoria?category=nuevos', sectionId: '' },
+    { id: 'new', label: 'Nuevos', href: '/categoria?sort=newest', sectionId: '' },
 ];
 
 export const navigationIcons = [

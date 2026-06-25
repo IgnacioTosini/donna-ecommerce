@@ -12,20 +12,12 @@ import { createProductWithImages, updateProductWithImages, getProductById, Exist
 import { getCategories } from '@/app/actions/category.action';
 import { Category } from '@/types';
 import { useProductModalStore } from '@/store/product.store';
+import { PRODUCT_SIZE_ORDER } from '@/utils/sizeHelpers';
 import z from 'zod';
 
 import './_productForm.scss';
 
-const CLOTHING_SIZES = [
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL',
-    'XXL',
-    '3XL',
-    'Único',
-];
+const CLOTHING_SIZES = [...PRODUCT_SIZE_ORDER];
 
 type ProductVariantForm = {
     id?: string;

@@ -7,6 +7,13 @@ import { ColorFilterSection } from './colorFilterSection/ColorFilterSection';
 import { PriceFilterSection } from './priceFilterSection/PriceFilterSection';
 import { SizeFilterSection } from './sizeFilterSection/SizeFilterSection';
 import { CategoryFilters } from './categoryFilterSidebar.types';
+import { normalizeColorValue } from '@/utils/colorHelpers';
+import {
+    PRODUCT_SIZE_ORDER,
+    normalizeSizeValue,
+    sizesMatch,
+    sortProductSizes,
+} from '@/utils/sizeHelpers';
 import './_categoryFilterSidebar.scss';
 
 interface Props {
@@ -16,20 +23,27 @@ interface Props {
     filters?: CategoryFilters;
 }
 
-const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
 export const CategoryFilterSidebar = ({
     categories,
     products,
     priceProducts,
     filters = {},
 }: Props) => {
-    const sizes = new Set<string>(sizeOrder);
+    const sizes = new Set<string>(PRODUCT_SIZE_ORDER);
     const colors = new Set<string>();
+    const activeSize = normalizeSizeValue(filters.size);
 
     products?.forEach((product) => {
         product.variants.forEach((variant) => {
-            colors.add(variant.colorHex);
+            const hasAvailableStock = variant.sizes.some((size) =>
+                size.stock > 0 &&
+                (!activeSize || sizesMatch(size.size, activeSize))
+            );
+            const normalizedColor = normalizeColorValue(variant.colorHex);
+
+            if (hasAvailableStock && normalizedColor) {
+                colors.add(normalizedColor);
+            }
 
             variant.sizes.forEach((size) => {
                 sizes.add(size.size);
@@ -59,16 +73,7 @@ export const CategoryFilterSidebar = ({
         return queryString ? `/categoria?${queryString}` : '/categoria';
     };
 
-    const sortedSizes = [...sizes].sort((a, b) => {
-        const aIndex = sizeOrder.indexOf(a);
-        const bIndex = sizeOrder.indexOf(b);
-
-        if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-        if (aIndex === -1) return 1;
-        if (bIndex === -1) return -1;
-
-        return aIndex - bIndex;
-    });
+    const sortedSizes = sortProductSizes([...sizes]);
 
     const sortedColors = [...colors].sort();
     const priceRange = useMemo(() => {
