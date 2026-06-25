@@ -3,7 +3,7 @@ import Navbar from "@/components/layout/Navbar/Navbar";
 import { CartDrawer } from "@/components/cart/CartDrawer/CartDrawer";
 import { isAdminAuthenticated } from "@/lib/admin-session";
 import type { Metadata } from "next";
-/* import { Analytics } from "@vercel/analytics/next"; */
+import { Analytics } from "@vercel/analytics/next";
 import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {
@@ -50,7 +50,7 @@ export default async function SiteLayout({
       {children}
       <Footer />
       <CartDrawer />
-      {/* <Analytics /> */}
+      <Analytics />
     </>
   );
 }

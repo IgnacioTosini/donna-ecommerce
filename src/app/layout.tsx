@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
-import "./globals.scss";
 import "react-toastify/dist/ReactToastify.css";
+import "./globals.scss";
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair-display",
@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://donna.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://donna-ecommerce.vercel.app"),
   title: {
     default: "Donna | Indumentaria y moda online",
     template: "%s | Donna",
