@@ -18,7 +18,7 @@
         width: 72px;
         aspect-ratio: 3 / 4;
         border: 1px solid transparent;
-        background-color: $color-text;
+        background-color: $color-hover-secondary;
         cursor: pointer;
         overflow: hidden;
         transition: border-color 0.2s ease, opacity 0.2s ease;
@@ -35,7 +35,7 @@
 
     .product-gallery-thumbnail-image,
     .product-gallery-main-image {
-        object-fit: cover;
+        object-fit: contain;
         object-position: center;
     }
 
@@ -44,7 +44,7 @@
         width: 100%;
         min-height: 620px;
         aspect-ratio: 4 / 5;
-        background-color: $color-text;
+        background-color: $color-hover-secondary;
         overflow: hidden;
     }
 
@@ -53,7 +53,7 @@
         align-items: center;
         justify-content: center;
         min-height: 420px;
-        background-color: $color-text;
+        background-color: $color-hover-secondary;
         color: $border-color;
         font-family: $font-family;
         font-size: $font-size-normal;

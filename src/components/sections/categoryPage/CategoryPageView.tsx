@@ -17,6 +17,8 @@ type CategoryFilters = {
     featured?: string;
     sale?: string;
     sort?: string;
+    page?: string;
+    pageSize?: string;
 };
 
 type Props = {
@@ -24,6 +26,12 @@ type Props = {
     products: ProductWithRelations[];
     productsForFilters: ProductWithRelations[];
     productsForPriceRange: ProductWithRelations[];
+    pagination?: {
+        currentPage: number;
+        totalPages: number;
+        totalProducts: number;
+        pageSize: number;
+    };
     filters: CategoryFilters;
 };
 
@@ -32,6 +40,7 @@ export const CategoryPageView = ({
     products,
     productsForFilters,
     productsForPriceRange,
+    pagination,
     filters,
 }: Props) => {
     const activeCategory = categories.find(
@@ -69,9 +78,15 @@ export const CategoryPageView = ({
                 />
                 <ProductsGrid
                     products={products}
+                    pagination={pagination}
                     filters={{
+                        category: filters.category,
                         color: filters.color,
+                        featured: filters.featured,
+                        maxPrice: filters.maxPrice,
+                        sale: filters.sale,
                         size: filters.size,
+                        sort: filters.sort,
                     }}
                 />
             </div>

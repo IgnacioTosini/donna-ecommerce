@@ -1,5 +1,5 @@
 import { getCategories } from "@/app/actions/category.action";
-import { getFilteredProducts } from "@/app/actions/product.action";
+import { getFilteredProducts, getPaginatedFilteredProducts } from "@/app/actions/product.action";
 import type { ProductSortOption } from "@/app/actions/product.action";
 import { CategoryPageView } from "@/components/sections/categoryPage/CategoryPageView";
 import type { Metadata } from "next";
@@ -12,6 +12,8 @@ type SearchParams = Promise<{
     featured?: string;
     sale?: string;
     sort?: string;
+    page?: string;
+    pageSize?: string;
 }>;
 
 const sortOptions: ProductSortOption[] = [
@@ -27,6 +29,13 @@ const parseSort = (sort?: string): ProductSortOption =>
         : "newest";
 
 const parseBooleanParam = (value?: string) => value === "true";
+const parsePositiveIntegerParam = (value?: string, fallback = 1) => {
+    const numberValue = Number(value);
+
+    return Number.isInteger(numberValue) && numberValue > 0
+        ? numberValue
+        : fallback;
+};
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
     const params = await searchParams;
@@ -67,6 +76,8 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
     const params = await searchParams;
     const featured = parseBooleanParam(params.featured);
     const sale = parseBooleanParam(params.sale);
+    const page = parsePositiveIntegerParam(params.page);
+    const pageSize = parsePositiveIntegerParam(params.pageSize, 10);
 
     const productFilters = {
         category: params.category,
@@ -83,11 +94,13 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
         sort: parseSort(params.sort),
     };
 
-    const [categories, products, productsForFilters, productsForPriceRange] = await Promise.all([
+    const [categories, paginatedProducts, productsForFilters, productsForPriceRange] = await Promise.all([
         getCategories(),
-        getFilteredProducts({
+        getPaginatedFilteredProducts({
             ...productFilters,
             maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
+            page,
+            pageSize,
         }),
         getFilteredProducts(filterOptionProductsFilters),
         getFilteredProducts({}),
@@ -96,9 +109,15 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
     return (
         <CategoryPageView
             categories={categories}
-            products={products}
+            products={paginatedProducts.products}
             productsForFilters={productsForFilters}
             productsForPriceRange={productsForPriceRange}
+            pagination={{
+                currentPage: paginatedProducts.currentPage,
+                totalPages: paginatedProducts.totalPages,
+                totalProducts: paginatedProducts.totalProducts,
+                pageSize: paginatedProducts.pageSize,
+            }}
             filters={{
                 ...params,
                 featured: featured ? "true" : undefined,

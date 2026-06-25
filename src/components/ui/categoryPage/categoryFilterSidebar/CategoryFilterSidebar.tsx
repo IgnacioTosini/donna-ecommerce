@@ -61,6 +61,7 @@ export const CategoryFilterSidebar = ({
         if (options.resetPrice) {
             delete mergedFilters.maxPrice;
         }
+        delete mergedFilters.page;
 
         Object.entries(mergedFilters).forEach(([key, value]) => {
             if (value) {

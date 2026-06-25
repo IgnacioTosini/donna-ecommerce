@@ -6,6 +6,8 @@ export type CategoryFilters = {
     featured?: string;
     sale?: string;
     sort?: string;
+    page?: string;
+    pageSize?: string;
 };
 
 export type BuildFilterHref = (

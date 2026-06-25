@@ -3,6 +3,7 @@
 import { ProductWithRelations } from '@/types';
 import Image from 'next/image';
 import { IoBagHandleOutline } from 'react-icons/io5';
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
@@ -14,13 +15,24 @@ import './_productsGrid.scss';
 
 interface Props {
     products: ProductWithRelations[];
+    pagination?: {
+        currentPage: number;
+        totalPages: number;
+        totalProducts: number;
+        pageSize: number;
+    };
     filters?: {
+        category?: string;
         color?: string;
+        featured?: string;
+        maxPrice?: string;
+        sale?: string;
         size?: string;
+        sort?: string;
     };
 }
 
-export const ProductsGrid = ({ products, filters = {} }: Props) => {
+export const ProductsGrid = ({ products, pagination, filters = {} }: Props) => {
     const gridRef = useRef<HTMLDivElement>(null);
     const addItem = useCartStore((state) => state.addItem);
     const genderLabels = {
@@ -92,6 +104,33 @@ export const ProductsGrid = ({ products, filters = {} }: Props) => {
         });
     };
 
+    const totalPages = pagination?.totalPages ?? 1;
+    const currentPage = pagination?.currentPage ?? 1;
+    const hasPagination = totalPages > 1;
+
+    const buildPaginationHref = (page: number) => {
+        const params = new URLSearchParams();
+        const filterEntries = Object.entries(filters);
+
+        filterEntries.forEach(([key, value]) => {
+            if (value) {
+                params.set(key, value);
+            }
+        });
+
+        if (page > 1) {
+            params.set('page', String(page));
+        }
+
+        if (pagination?.pageSize && pagination.pageSize !== 10) {
+            params.set('pageSize', String(pagination.pageSize));
+        }
+
+        const queryString = params.toString();
+
+        return queryString ? `/categoria?${queryString}` : '/categoria';
+    };
+
     useEffect(() => {
         if (!gridRef.current) return;
 
@@ -103,65 +142,127 @@ export const ProductsGrid = ({ products, filters = {} }: Props) => {
         }, gridRef.current);
 
         return () => ctx.revert();
-    }, [products, filters.color, filters.size]);
+    }, [products, currentPage, filters.color, filters.size]);
 
     return (
-        <div ref={gridRef} className="products-grid">
-            {products.map((product) => {
-                const primaryImage = product.images[0];
-                const hoverImage = product.images[1] ?? primaryImage;
-                const label = product.gender ? genderLabels[product.gender] : product.category.name.toUpperCase();
-                const discountPercentage = getDiscountPercentage(product.price, product.compareAtPrice);
-                const hasStock = Boolean(getCartSelection(product));
+        <div className="products-grid-container">
+            <div ref={gridRef} className="products-grid">
+                {products.map((product) => {
+                    const primaryImage = product.images[0];
+                    const hoverImage = product.images[1] ?? primaryImage;
+                    const label = product.gender ? genderLabels[product.gender] : product.category.name.toUpperCase();
+                    const discountPercentage = getDiscountPercentage(product.price, product.compareAtPrice);
+                    const hasStock = Boolean(getCartSelection(product));
 
-                return (
-                    <article key={product.id} className="product-card">
-                        <div className="product-image-wrapper">
-                            {discountPercentage && (
-                                <span className="product-discount">-{discountPercentage}%</span>
-                            )}
-                            {primaryImage && (
-                                <Image
-                                    src={primaryImage.url}
-                                    alt={product.name}
-                                    className="product-image product-image-primary"
-                                    fill
-                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                />
-                            )}
+                    return (
+                        <article key={product.id} className="product-card">
+                            <div className="product-image-wrapper">
+                                {discountPercentage && (
+                                    <span className="product-discount">-{discountPercentage}%</span>
+                                )}
+                                {primaryImage && (
+                                    <Image
+                                        src={primaryImage.url}
+                                        alt={product.name}
+                                        className="product-image product-image-primary"
+                                        fill
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                    />
+                                )}
 
-                            {hoverImage && hoverImage.id !== primaryImage?.id && (
-                                <Image
-                                    src={hoverImage.url}
-                                    alt={product.name}
-                                    className="product-image product-image-hover"
-                                    fill
-                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                />
-                            )}
+                                {hoverImage && hoverImage.id !== primaryImage?.id && (
+                                    <Image
+                                        src={hoverImage.url}
+                                        alt={product.name}
+                                        className="product-image product-image-hover"
+                                        fill
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                    />
+                                )}
 
-                            <button
-                                type="button"
-                                className="product-cart-button"
-                                disabled={!hasStock}
-                                onClick={() => handleAddToCart(product)}
-                            >
-                                <IoBagHandleOutline />
-                                {hasStock ? 'Añadir al carrito' : 'Sin stock'}
-                            </button>
-                        </div>
-
-                        <Link href={`/producto/${product.slug}`} className="product-info">
-                            <p className="product-category">{label}</p>
-                            <h3 className="product-name">{product.name}</h3>
-                            <div className={`product-prices`}>
-                                <p className="product-price">${product.price}</p>
-                                {discountPercentage && <p className="product-compare-at-price">${product.compareAtPrice}</p>}
+                                <button
+                                    type="button"
+                                    className="product-cart-button"
+                                    disabled={!hasStock}
+                                    onClick={() => handleAddToCart(product)}
+                                >
+                                    <IoBagHandleOutline />
+                                    {hasStock ? 'Añadir al carrito' : 'Sin stock'}
+                                </button>
                             </div>
+
+                            <Link href={`/producto/${product.slug}`} className="product-info">
+                                <p className="product-category">{label}</p>
+                                <h3 className="product-name">{product.name}</h3>
+                                <div className={`product-prices`}>
+                                    <p className="product-price">${product.price}</p>
+                                    {discountPercentage && <p className="product-compare-at-price">${product.compareAtPrice}</p>}
+                                </div>
+                            </Link>
+                        </article>
+                    );
+                })}
+            </div>
+
+            {hasPagination && (
+                <nav className="products-pagination" aria-label="Paginación de productos">
+                    {currentPage === 1 ? (
+                        <button
+                            type="button"
+                            className="products-pagination-button"
+                            disabled
+                            aria-label="Página anterior"
+                        >
+                            <MdKeyboardArrowLeft />
+                        </button>
+                    ) : (
+                        <Link
+                            href={buildPaginationHref(currentPage - 1)}
+                            scroll={false}
+                            className="products-pagination-button"
+                            aria-label="Página anterior"
+                        >
+                            <MdKeyboardArrowLeft />
                         </Link>
-                    </article>
-                );
-            })}
+                    )}
+
+                    {Array.from({ length: totalPages }, (_, index) => {
+                        const page = index + 1;
+
+                        return (
+                            <Link
+                                key={page}
+                                href={buildPaginationHref(page)}
+                                scroll={false}
+                                className={`products-pagination-button ${currentPage === page ? 'is-active' : ''}`}
+                                aria-current={currentPage === page ? 'page' : undefined}
+                            >
+                                {page}
+                            </Link>
+                        );
+                    })}
+
+                    {currentPage === totalPages ? (
+                        <button
+                            type="button"
+                            className="products-pagination-button"
+                            disabled
+                            aria-label="Página siguiente"
+                        >
+                            <MdKeyboardArrowRight />
+                        </button>
+                    ) : (
+                        <Link
+                            href={buildPaginationHref(currentPage + 1)}
+                            scroll={false}
+                            className="products-pagination-button"
+                            aria-label="Página siguiente"
+                        >
+                            <MdKeyboardArrowRight />
+                        </Link>
+                    )}
+                </nav>
+            )}
         </div>
     )
 }

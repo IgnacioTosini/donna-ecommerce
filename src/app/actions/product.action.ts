@@ -569,31 +569,55 @@ type ProductFilters = {
     sort?: ProductSortOption;
 };
 
-export async function getFilteredProducts({
+type ProductPaginationFilters = ProductFilters & {
+    page?: number;
+    pageSize?: number;
+};
+
+const PRODUCT_LIST_INCLUDE = {
+    category: true,
+    images: {
+        orderBy: {
+            order: 'asc',
+        },
+    },
+    variants: {
+        include: {
+            sizes: {
+                orderBy: {
+                    size: 'asc',
+                },
+            },
+        },
+    },
+} satisfies Prisma.ProductInclude;
+
+const buildFilteredProductsOrderBy = (
+    sort: ProductSortOption = 'newest'
+): Prisma.ProductOrderByWithRelationInput[] =>
+    sort === 'priceAsc'
+        ? [{ price: 'asc' }]
+        : sort === 'priceDesc'
+            ? [{ price: 'desc' }]
+            : sort === 'featured'
+                ? [{ featured: 'desc' }, { createdAt: 'desc' }]
+                : [{ createdAt: 'desc' }];
+
+const buildFilteredProductsWhere = ({
     category,
     size,
     color,
     maxPrice,
     featured,
     sale,
-    sort = 'newest',
-}: ProductFilters) {
+}: ProductFilters): Prisma.ProductWhereInput => {
     const categorySlug = category?.trim().toLowerCase();
     const selectedSize = normalizeSizeValue(size);
     const selectedColor = normalizeColorValue(color);
     const hasMaxPrice =
         typeof maxPrice === 'number' && Number.isFinite(maxPrice);
 
-    const orderBy: Prisma.ProductOrderByWithRelationInput[] =
-        sort === 'priceAsc'
-            ? [{ price: 'asc' }]
-            : sort === 'priceDesc'
-                ? [{ price: 'desc' }]
-                : sort === 'featured'
-                    ? [{ featured: 'desc' }, { createdAt: 'desc' }]
-                    : [{ createdAt: 'desc' }];
-
-    const where: Prisma.ProductWhereInput = {
+    return {
         active: true,
         ...(categorySlug
             ? {
@@ -646,28 +670,46 @@ export async function getFilteredProducts({
             },
         },
     };
+};
 
+export async function getFilteredProducts(filters: ProductFilters) {
+    const where = buildFilteredProductsWhere(filters);
+    const orderBy = buildFilteredProductsOrderBy(filters.sort);
     const products = await prisma.product.findMany({
         where,
-        include: {
-            category: true,
-            images: {
-                orderBy: {
-                    order: 'asc',
-                },
-            },
-            variants: {
-                include: {
-                    sizes: {
-                        orderBy: {
-                            size: 'asc',
-                        },
-                    },
-                },
-            },
-        },
+        include: PRODUCT_LIST_INCLUDE,
         orderBy,
     });
 
     return serializePrisma(products) as ProductWithRelations[];
+}
+
+export async function getPaginatedFilteredProducts({
+    page = 1,
+    pageSize = 10,
+    ...filters
+}: ProductPaginationFilters) {
+    const where = buildFilteredProductsWhere(filters);
+    const orderBy = buildFilteredProductsOrderBy(filters.sort);
+    const safePageSize = Math.min(Math.max(Math.floor(pageSize), 1), 60);
+    const requestedPage = Math.max(Math.floor(page), 1);
+    const totalProducts = await prisma.product.count({ where });
+    const totalPages = Math.max(1, Math.ceil(totalProducts / safePageSize));
+    const currentPage = Math.min(requestedPage, totalPages);
+
+    const products = await prisma.product.findMany({
+        where,
+        include: PRODUCT_LIST_INCLUDE,
+        orderBy,
+        skip: (currentPage - 1) * safePageSize,
+        take: safePageSize,
+    });
+
+    return {
+        products: serializePrisma(products) as ProductWithRelations[],
+        totalProducts,
+        totalPages,
+        currentPage,
+        pageSize: safePageSize,
+    };
 }
