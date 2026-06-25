@@ -1,0 +1,275 @@
+@use '@/styles/variables' as *;
+@use 'sass:color';
+
+.navbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background: $primary-color;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+
+    .navbarBrand {
+        text-decoration: none;
+
+        .navbarBrandText {
+            font-family: $font-family-display;
+            font-size: $font-size-xlarge;
+            font-weight: $font-weight-medium;
+            color: $color-text-tertiary;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+    }
+
+    .navbarLinks,
+    .navbarIcons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+
+        .navbarLink {
+            position: relative;
+            display: flex;
+            align-items: center;
+            font-family: $font-family;
+            font-size: $font-size-normal;
+            font-weight: $font-weight-regular;
+            color: $color-text-tertiary;
+            text-decoration: none;
+            transition: color 0.3s;
+            line-height: 20px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+
+            &:hover {
+                color: $color-text-quaternary;
+            }
+
+            &:hover::after,
+            &.active::after {
+                transform: scaleX(1);
+            }
+
+            &.active {
+                color: $color-text-quaternary;
+                filter: drop-shadow(0 0 4px $color-text-quaternary);
+            }
+        }
+
+        .navbarIcon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: $color-text-tertiary;
+            font-size: $font-size-medium-large;
+            transition: color 0.3s;
+
+            &:hover {
+                color: $color-text-quaternary;
+            }
+
+            &.active {
+                color: $color-text-quaternary;
+            }
+
+            .cartBadge {
+                position: absolute;
+                top: -0.5rem;
+                right: -0.8rem;
+                background-color: $secondary-color;
+                color: $color-text;
+                font-size: $font-size-xsmall;
+                font-weight: $font-weight-bold;
+                border-radius: 9999px;
+                padding: 0.2rem 0.3rem;
+            }
+        }
+
+        .navbarIconButton {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+        }
+    }
+
+    .hamburgerButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        color: $color-text-tertiary;
+        cursor: pointer;
+    }
+
+    .navbarSearchPanel {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        background: $primary-color;
+        box-shadow: 0 18px 30px rgba(0, 0, 0, 0.12);
+        padding: 1rem 3rem 1.25rem;
+    }
+
+    .navbarSearchBox {
+        width: min(720px, 100%);
+        margin: 0 auto;
+    }
+
+    .navbarSearchInput {
+        width: 100%;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        border-radius: 8px;
+        background: $primary-color;
+        color: $color-text-tertiary;
+        font-family: $font-family;
+        font-size: $font-size-normal;
+        outline: 0;
+        padding: 0.85rem 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus {
+            border-color: $color-text-quaternary;
+            box-shadow: 0 0 0 3px rgba(212, 167, 103, 0.22);
+        }
+    }
+
+    .navbarSearchResults {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        max-height: min(420px, calc(100vh - 150px));
+        overflow-y: auto;
+        padding-top: 0.75rem;
+    }
+
+    .navbarSearchMessage {
+        color: $color-text-secondary;
+        font-family: $font-family;
+        font-size: $font-size-normal;
+        margin: 0;
+        padding: 0.65rem 0.25rem;
+    }
+
+    .navbarSearchResult {
+        display: grid;
+        grid-template-columns: 56px 1fr auto;
+        align-items: center;
+        gap: 0.85rem;
+        border-radius: 8px;
+        color: $color-text-tertiary;
+        padding: 0.55rem;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s;
+
+        &:hover {
+            background: $tertiary-color;
+            color: $color-text-quaternary;
+        }
+    }
+
+    .navbarSearchImage {
+        position: relative;
+        display: block;
+        width: 56px;
+        aspect-ratio: 1;
+        overflow: hidden;
+        border-radius: 8px;
+        background: $tertiary-color;
+
+        img {
+            object-fit: cover;
+        }
+    }
+
+    .navbarSearchImagePlaceholder {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, $tertiary-color, rgba(0, 0, 0, 0.08));
+    }
+
+    .navbarSearchInfo {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .navbarSearchCategory,
+    .navbarSearchName,
+    .navbarSearchPrice {
+        font-family: $font-family;
+    }
+
+    .navbarSearchCategory {
+        color: $color-text-secondary;
+        font-size: $font-size-xsmall;
+        font-weight: $font-weight-semibold;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .navbarSearchName {
+        overflow: hidden;
+        color: inherit;
+        font-size: $font-size-normal;
+        font-weight: $font-weight-medium;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .navbarSearchPrice {
+        color: $color-text-tertiary;
+        font-size: $font-size-small;
+        font-weight: $font-weight-semibold;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1.1rem 1rem;
+
+        .navbarBrand {
+            .navbarBrandText {
+                font-size: $font-size-large;
+                letter-spacing: 0.22em;
+            }
+        }
+
+        .navbarIcons {
+            gap: 0.75rem;
+        }
+
+        .navbarSearchPanel {
+            padding: 0.85rem 1rem 1rem;
+        }
+
+        .navbarSearchResult {
+            grid-template-columns: 48px 1fr auto;
+            gap: 0.7rem;
+            padding: 0.5rem 0.25rem;
+        }
+
+        .navbarSearchImage {
+            width: 48px;
+        }
+
+        .navbarSearchName {
+            white-space: normal;
+        }
+    }
+}

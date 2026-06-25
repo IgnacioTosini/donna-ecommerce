@@ -1,0 +1,51 @@
+@use '@/styles/variables' as *;
+
+.dashboard-summary {
+    min-height: 292px;
+    padding: 1.5rem;
+    border: 1px solid rgba($border-color, .3);
+    background: $primary-color;
+
+    h2 {
+        margin-bottom: 1rem;
+        color: $color-text-tertiary;
+        font-family: $font-family-display;
+        font-size: $font-size-large;
+        font-weight: $font-weight-regular;
+    }
+
+    dl {
+        display: flex;
+        flex-direction: column;
+    }
+
+    div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: .78rem 0;
+        border-bottom: 1px solid rgba($border-color, .24);
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    dt,
+    dd {
+        color: $color-text-tertiary;
+        font-size: $font-size-normal;
+        line-height: 1.2;
+    }
+
+    dt {
+        color: rgba($color-text-tertiary, .75);
+        font-weight: $font-weight-regular;
+    }
+
+    dd {
+        font-weight: $font-weight-semibold;
+        text-align: right;
+    }
+}

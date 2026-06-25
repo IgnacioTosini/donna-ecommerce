@@ -1,0 +1,66 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260620205554
+Nombre de usuario: ZURDO\CodexSandboxOffline
+Usuario RunAs: ZURDO\CodexSandboxOffline
+Nombre de la configuración: 
+Máquina: ZURDO (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Get-Content -LiteralPath 'src/types/product.types.ts'
+Id. de proceso: 25432
+PSVersion: 5.1.26100.8655
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8655
+BuildVersion: 10.0.26100.8655
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+**********************
+Hora de inicio del comando: 20260620205554
+**********************
+PS>try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Get-Content -LiteralPath 'src/types/product.types.ts'
+import { Category } from "./category.types";
+import { ProductImage } from "./product-image.types";
+import { ProductVariant } from "./product-variant.types";
+
+export type Gender = "MEN" | "WOMEN" | "UNISEX";
+
+export interface Product {
+    id: string;
+
+    name: string;
+    slug: string;
+
+    description?: string | null;
+
+    price: number;
+    compareAtPrice?: number | null;
+
+    gender?: Gender | null;
+
+    featured: boolean;
+    active: boolean;
+
+    categoryId: string;
+
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ProductWithRelations extends Product {
+    category: Category;
+    images: ProductImage[];
+    variants: ProductVariant[];
+}
+**********************
+Hora de inicio del comando: 20260620205554
+**********************
+PS>$global:?
+True
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260620205554
+**********************

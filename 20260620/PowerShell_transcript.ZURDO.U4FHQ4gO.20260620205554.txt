@@ -1,0 +1,58 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260620205554
+Nombre de usuario: ZURDO\CodexSandboxOffline
+Usuario RunAs: ZURDO\CodexSandboxOffline
+Nombre de la configuración: 
+Máquina: ZURDO (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Get-Content -LiteralPath 'src/app/(site)/page.tsx'
+Id. de proceso: 21728
+PSVersion: 5.1.26100.8655
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8655
+BuildVersion: 10.0.26100.8655
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+**********************
+Hora de inicio del comando: 20260620205554
+**********************
+PS>try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Get-Content -LiteralPath 'src/app/(site)/page.tsx'
+import { BannerPlacement } from "@prisma/client";
+import { getBannersByPlacement } from "../actions/banner.action";
+import { BannerSection } from "@/components/sections/bannerSection/BannerSection";
+import { Categories } from "@/components/sections/categories/Categories";
+import { getCategories } from "../actions/category.action";
+import { Products } from "@/components/sections/products/Products";
+import { getProducts } from "../actions/product.action";
+
+export default async function Home() {
+    const heroBanners = await getBannersByPlacement(BannerPlacement.HERO);
+    const promoBanners = await getBannersByPlacement(BannerPlacement.PROMO);
+    const collectionBanners = await getBannersByPlacement(BannerPlacement.COLLECTION);
+    const categories = await getCategories();
+    const products = await getProducts();
+    return (
+        <main>
+            <BannerSection banners={heroBanners} />
+            <Categories categories={categories} />
+            <Products span="Lo más vendido" title="Bestsellers de la temporada" products={[]} /> {/* best sellers */}
+            <BannerSection banners={promoBanners} />
+            {/* <Products /> */} {/* new arrivals */}
+            <BannerSection banners={collectionBanners} />
+        </main>
+    );
+}
+**********************
+Hora de inicio del comando: 20260620205554
+**********************
+PS>$global:?
+True
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260620205554
+**********************

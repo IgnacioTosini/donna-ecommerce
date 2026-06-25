@@ -1,0 +1,15 @@
+@use '@/styles/variables' as *;
+
+.products-section {
+    padding: 4rem 0;
+
+    .products-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    @media (max-width: 640px) {
+        padding: 3rem 0;
+    }
+}

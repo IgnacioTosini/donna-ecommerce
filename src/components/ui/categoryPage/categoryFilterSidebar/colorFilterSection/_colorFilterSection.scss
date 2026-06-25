@@ -1,0 +1,53 @@
+@use '@/styles/variables' as *;
+
+.category-filter-color-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.category-filter-color {
+    display: block;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    outline: 1px solid transparent;
+    outline-offset: 3px;
+    transition: outline-color 0.2s ease;
+
+    &:hover,
+    &.is-active {
+        outline-color: $secondary-color;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.35;
+
+        &:hover {
+            outline-color: transparent;
+        }
+    }
+}
+
+.color-swatch {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 1px solid $tertiary-color;
+    border-radius: inherit;
+}
+
+@media (max-width: 767px) {
+    .category-filter-color-list {
+        width: 100%;
+        max-width: 100%;
+    }
+}

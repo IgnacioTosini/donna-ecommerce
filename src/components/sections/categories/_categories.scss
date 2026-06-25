@@ -1,0 +1,109 @@
+@use '@/styles/variables' as *;
+
+.categories-section {
+    padding: 5rem 1rem;
+    background: $primary-color;
+
+    .categories-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .categories-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        width: 100%;
+        margin-top: 2rem;
+
+        @media (max-width: 900px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .category-card {
+        position: relative;
+        display: block;
+        height: 520px;
+        overflow: hidden;
+        text-decoration: none;
+        background: $tertiary-color;
+
+        &:hover {
+            .category-image {
+                transform: scale(1.04);
+            }
+
+            .category-link {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    }
+
+    .category-image {
+        object-fit: cover;
+        object-position: center;
+        transition: transform .6s ease;
+    }
+
+    .category-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(180deg,
+                rgba(0, 0, 0, 0) 35%,
+                rgba(0, 0, 0, .62) 100%);
+    }
+
+    .category-content {
+        position: absolute;
+        left: 2rem;
+        right: 2rem;
+        bottom: 2rem;
+        z-index: 2;
+        color: $color-text;
+        text-align: left;
+    }
+
+    .category-products {
+        margin-bottom: .4rem;
+        font-size: $font-size-small;
+        font-weight: $font-weight-bold;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: rgba($color-text, .75);
+    }
+
+    .category-name {
+        font-family: $font-family-display;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: $font-weight-regular;
+        line-height: 1;
+        margin-bottom: 1rem;
+    }
+
+    .category-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .6rem;
+        padding-bottom: .35rem;
+        border-bottom: 1px solid currentColor;
+
+        font-size: $font-size-small;
+        font-weight: $font-weight-bold;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+
+        color: $color-text;
+
+        opacity: 0;
+        transform: translateY(10px);
+
+        transition:
+            opacity .3s ease,
+            transform .3s ease,
+            color .2s ease;
+    }
+}

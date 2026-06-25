@@ -1,0 +1,34 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260620205547
+Nombre de usuario: ZURDO\CodexSandboxOffline
+Usuario RunAs: ZURDO\CodexSandboxOffline
+Nombre de la configuración: 
+Máquina: ZURDO (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+rg -n "best sellers|new arrivals|bestSellers|newArrivals|products" src
+Id. de proceso: 18308
+PSVersion: 5.1.26100.8655
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8655
+BuildVersion: 10.0.26100.8655
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+**********************
+Hora de inicio del comando: 20260620205547
+**********************
+PS>try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+rg -n "best sellers|new arrivals|bestSellers|newArrivals|products" src
+
+**********************
+Hora de inicio del comando: 20260620205548
+**********************
+PS>$global:?
+True
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260620205548
+**********************

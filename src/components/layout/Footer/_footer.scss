@@ -1,0 +1,179 @@
+@use '@/styles/variables' as *;
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: $secondary-color;
+    color: $color-text-secondary;
+    width: 100%;
+    text-align: center;
+    padding: 2rem 1rem;
+    border-top: 1px solid $border-color;
+    z-index: 10000;
+
+    .footerContent {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 1200px;
+        border-bottom: 1px solid $border-color;
+        padding-bottom: 1rem;
+
+        @media (max-width: 768px) {
+            justify-content: center;
+            gap: 3rem;
+        }
+
+        .footerContentHeader {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            max-width: 450px;
+            text-align: left;
+
+            @media (max-width: 768px) {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: $font-size-large;
+                font-weight: $font-weight-regular;
+                font-family: $font-family-display;
+                letter-spacing: 0.3em;
+                text-transform: uppercase;
+                line-height: 32px;
+            }
+
+            .footerContentHeaderDescription {
+                font-family: $font-family;
+                font-size: $font-size-normal;
+                color: $color-text-secondary;
+                margin-top: 0.5rem;
+            }
+
+            .footerContentHeaderSocialMedia {
+                display: flex;
+                gap: 1rem;
+                margin-top: 0.5rem;
+
+                a {
+                    color: $color-text-secondary;
+                    transition: color 0.3s ease;
+
+                    &:hover {
+                        color: $color-text-quaternary;
+                    }
+                }
+            }
+        }
+
+        .footerContentNavigation {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+
+            li {
+                list-style: none;
+
+                a {
+                    color: $color-text-secondary;
+                    text-decoration: none;
+                    font-family: $font-family;
+                    font-size: $font-size-normal;
+                    transition: color 0.3s ease;
+
+                    &:hover {
+                        color: $color-text-quaternary;
+                    }
+                }
+            }
+        }
+
+        .footerContentPayment {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: $font-size-small;
+
+            @media (max-width: 768px) {
+                align-items: center;
+                text-align: center;
+            }
+
+            li {
+                list-style: none;
+                font-family: $font-family;
+                font-size: $font-size-small;
+                color: $color-text-secondary;
+                border: 1px solid $border-color;
+                padding: 0.25rem 0.5rem;
+                transition: all 0.3s ease-in-out;
+
+                &:hover {
+                    border-color: $color-hover-secondary;
+                    color: $color-text-quaternary;
+                }
+            }
+        }
+    }
+
+    .footerContentNavigationTitle,
+    .footerContentPaymentTitle {
+        font-family: $font-family-display;
+        font-size: $font-size-normal;
+        color: $color-text-secondary;
+        margin-bottom: 0.5rem;
+        font-weight: $font-weight-regular;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .footerContentFooter {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        width: 100%;
+        max-width: 1200px;
+
+        .footerContentInfo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            width: 100%;
+
+            @media (max-width: 768px) {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            h4 {
+                margin: 0;
+                font-family: $font-family;
+                font-size: $font-size-small;
+                color: $color-text-secondary;
+                font-weight: $font-weight-regular;
+            }
+        }
+
+        p {
+            font-family: $font-family;
+            font-size: $font-size-xsmall;
+            color: $color-text-secondary;
+            font-weight: $font-weight-regular;
+        }
+    }
+}

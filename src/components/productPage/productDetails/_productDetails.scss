@@ -1,0 +1,210 @@
+@use '@/styles/variables' as *;
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: 768px) {
+        padding: 0 1rem;
+        .product-details-content {
+            flex-direction: column;
+        }
+    }
+
+    .product-details-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 1200px;
+        padding: 2rem 0;
+        margin-inline: auto;
+
+        .product-details-content {
+            display: flex;
+            width: 100%;
+            gap: 2rem;
+            padding: 2rem 0;
+
+            .product-details-info {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+
+                .product-details-category {
+                    font-size: $font-size-small;
+                    letter-spacing: 0.02em;
+                    text-transform: uppercase;
+                    color: $color-text-quaternary;
+                }
+
+                .product-details-title {
+                    font-size: $font-size-xxlarge;
+                    font-weight: $font-weight-regular;
+                    color: $color-text-tertiary;
+                    font-family: $font-family-display;
+                    line-height: 40px;
+                }
+
+                .product-details-price {
+                    font-size: $font-size-large;
+                    font-weight: $font-weight-medium;
+                    color: $color-text-tertiary;
+                    line-height: 32px;
+                }
+            }
+
+            .product-details-description-container {
+                margin-top: 1.5rem;
+
+                .product-details-description-title {
+                    font-size: $font-size-small;
+                    font-weight: $font-weight-regular;
+                    color: $color-text-tertiary;
+                    font-family: $font-family;
+                    letter-spacing: 0.02em;
+                    text-transform: uppercase;
+                    line-height: 32px;
+                }
+
+                .product-details-description {
+                    font-size: $font-size-normal;
+                    color: $color-text-tertiary;
+                    line-height: 23px;
+                }
+            }
+
+            .category-filter-section {
+                padding: 1.25rem 0 0;
+            }
+
+            .category-filter-sidebar-title {
+                margin-bottom: 0.75rem;
+                color: $secondary-color;
+                font-family: $font-family;
+                font-size: $font-size-small;
+                font-weight: $font-weight-regular;
+                letter-spacing: 1px;
+                line-height: 1;
+                text-transform: uppercase;
+            }
+
+            .product-purchase-actions {
+                display: flex;
+                align-items: stretch;
+                gap: 0.75rem;
+                width: 100%;
+                margin: 1.5rem 0 0;
+            }
+
+            .product-purchase-quantity {
+                display: grid;
+                grid-template-columns: 34px 40px 34px;
+                width: 110px;
+                min-width: 110px;
+                height: 48px;
+                border: 1px solid $tertiary-color;
+                background-color: $primary-color;
+            }
+
+            .product-purchase-quantity-button {
+                display: grid;
+                place-items: center;
+                border: 0;
+                background: transparent;
+                color: $secondary-color;
+                cursor: pointer;
+                font-family: $font-family;
+                font-size: $font-size-medium-large;
+                font-weight: $font-weight-regular;
+                line-height: 1;
+
+                &:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.35;
+                }
+            }
+
+            .product-purchase-quantity-input {
+                width: 100%;
+                border: 0;
+                background: transparent;
+                color: $secondary-color;
+                font-family: $font-family;
+                font-size: $font-size-normal;
+                font-weight: $font-weight-regular;
+                text-align: center;
+                outline: none;
+                appearance: textfield;
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    margin: 0;
+                    appearance: none;
+                }
+            }
+
+            .product-purchase-add-button {
+                flex: 1 1 auto;
+                min-height: 48px;
+                padding: 0 1.5rem;
+                border: 1px solid $color-primary-button;
+                background-color: $color-primary-button;
+                color: $primary-color;
+                cursor: pointer;
+                font-family: $font-family;
+                font-size: $font-size-small;
+                font-weight: $font-weight-bold;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                transition: background-color 0.2s ease, border-color 0.2s ease;
+
+                &:hover:not(:disabled) {
+                    border-color: $color-hover-primary;
+                    background-color: $color-hover-primary;
+                }
+
+                &:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.5;
+                }
+            }
+
+            .product-details-buy-button {
+                width: 100%;
+                margin: 0.75rem 0 1.5rem;
+                padding: 0.9rem 1rem;
+                border: 1px solid $color-primary-button;
+                background-color: $color-primary-button;
+                color: $primary-color;
+                cursor: pointer;
+                font-family: $font-family;
+                font-size: $font-size-normal;
+                font-weight: $font-weight-medium;
+                text-transform: uppercase;
+                transition: background-color 0.2s ease, border-color 0.2s ease;
+
+                &:hover:not(:disabled) {
+                    border-color: $color-hover-primary;
+                    background-color: $color-hover-primary;
+                }
+
+                &:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.5;
+                }
+            }
+
+            @media (max-width: 520px) {
+                .product-purchase-actions {
+                    flex-direction: column;
+                }
+
+                .product-purchase-quantity {
+                    width: 100%;
+                    grid-template-columns: 1fr 48px 1fr;
+                }
+            }
+        }
+    }
+}

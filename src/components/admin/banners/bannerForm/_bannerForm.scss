@@ -1,0 +1,152 @@
+@use '@/styles/variables' as *;
+@use 'sass:color';
+
+.banner-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    color: $color-text-tertiary;
+    overflow-y: auto;
+    max-height: 80dvh;
+    font-family: $font-family;
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        .form-group {
+            flex: 1 1 300px;
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-size: $font-size-small;
+            font-weight: $font-weight-regular;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: $color-text-tertiary;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        textarea {
+            padding: 0.8rem;
+            border: 1px solid rgba($border-color, 0.3);
+            border-radius: 4px;
+            background-color: transparent;
+            color: $color-text-tertiary;
+            font-size: $font-size-normal;
+
+            &:focus {
+                outline: none;
+                border-color: $primary-color;
+            }
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            max-height: 300px;
+        }
+    }
+
+    .button-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+
+        @media (max-width: 768px) {
+            flex-wrap: wrap;
+        }
+
+        .submit-button,
+        .cancel-button {
+            padding: 1rem 2rem;
+            width: 100%;
+            max-width: 200px;
+            font-size: $font-size-normal;
+            font-weight: $font-weight-regular;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .submit-button {
+            border: none;
+            background-color: $color-primary-button;
+            color: $color-text;
+
+            &:hover {
+                background-color: color.adjust($color-hover-primary, $lightness: -10%);
+            }
+        }
+
+        .cancel-button {
+            background-color: transparent;
+            border: 1px solid rgba($border-color, 0.5);
+
+            &:hover {
+                background-color: $color-hover-secondary;
+            }
+        }
+    }
+
+    .placement-select {
+        padding: 0.8rem;
+        border: 1px solid rgba($border-color, 0.3);
+        border-radius: 4px;
+        background-color: transparent;
+        color: $color-text-tertiary;
+        font-size: $font-size-normal;
+
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+        }
+    }
+
+    .images-preview-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+        gap: .75rem;
+        margin-top: .5rem;
+
+        .image-preview-item {
+            position: relative;
+        }
+
+        .remove-image-button {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            z-index: 2;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .75);
+            color: white;
+            cursor: pointer;
+        }
+    }
+
+    .image-preview {
+        width: 100%;
+        height: 90px;
+        object-fit: cover;
+        border: 1px solid rgba($border-color, .25);
+        background: $tertiary-color;
+    }
+}

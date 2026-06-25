@@ -1,0 +1,12 @@
+.category-filter-price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    min-width: 220px;
+}
+
+@media (max-width: 767px) {
+    .category-filter-price {
+        min-width: 0;
+    }
+}

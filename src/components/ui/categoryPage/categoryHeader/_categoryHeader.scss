@@ -1,0 +1,38 @@
+@use '@/styles/variables' as *;
+
+.category-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: 3rem 0;
+    border-bottom: 1px solid rgba($border-color, 0.3);
+    width: 100%;
+    background-color: $tertiary-color;
+
+    @media (max-width: 768px) {
+        padding: 2rem 1rem;
+    }
+
+    .category-header-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 1200px;
+        margin-inline: auto;
+
+        .category-title {
+            font-size: $font-size-xxxlarge;
+            font-weight: $font-weight-regular;
+            color: $color-text-tertiary;
+            font-family: $font-family-display;
+        }
+
+        .category-description {
+            font-size: $font-size-medium;
+            font-family: $font-family;
+            font-weight: $font-weight-regular;
+        }
+    }
+}

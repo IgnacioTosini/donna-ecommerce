@@ -1,0 +1,52 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260620205601
+Nombre de usuario: ZURDO\CodexSandboxOffline
+Usuario RunAs: ZURDO\CodexSandboxOffline
+Nombre de la configuración: 
+Máquina: ZURDO (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Get-Content -LiteralPath 'src/components/sections/products/Products.tsx'
+Id. de proceso: 17720
+PSVersion: 5.1.26100.8655
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8655
+BuildVersion: 10.0.26100.8655
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+**********************
+Hora de inicio del comando: 20260620205601
+**********************
+PS>try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Get-Content -LiteralPath 'src/components/sections/products/Products.tsx'
+import { Product } from '@/types';
+import { Title } from '@/components/shared/Title/Title';
+import './_products.scss';
+
+interface Props {
+    span: string;
+    title: string;
+    products: Product[];
+}
+
+export const Products = ({ span, title, products }: Props) => {
+    return (
+        <div className="products-section">
+            <div className="products-wrapper">
+                <Title title={span} subTitle={title} />
+            </div>
+        </div>
+    )
+}
+**********************
+Hora de inicio del comando: 20260620205601
+**********************
+PS>$global:?
+True
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260620205601
+**********************

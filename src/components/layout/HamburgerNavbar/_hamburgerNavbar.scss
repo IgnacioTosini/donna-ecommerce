@@ -1,0 +1,40 @@
+@use '@/styles/variables' as *;
+
+.hamburgerNavbar {
+	display: none;
+	transform-origin: top center;
+}
+
+@media (max-width: 768px) {
+	.hamburgerNavbar {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 1rem 1.25rem 1.25rem;
+		background-color: $primary-color;
+		border-bottom: 1px solid $border-color;
+
+		a {
+			position: relative;
+			font-size: $font-size-normal;
+			color: $color-text-tertiary;
+			font-family: $font-family;
+			text-decoration: none;
+			transition: color 0.3s ease;
+			letter-spacing: 0.02em;
+			text-transform: uppercase;
+
+			&:hover {
+				color: $color-text-quaternary;
+			}
+
+			&.active {
+				color: $color-text-quaternary;
+			}
+		}
+	}
+}

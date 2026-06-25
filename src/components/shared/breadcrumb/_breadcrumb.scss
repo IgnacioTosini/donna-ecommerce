@@ -1,0 +1,28 @@
+@use '@/styles/variables' as *;
+
+.breadcrumb {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 0.875rem;
+    color: $color-text-tertiary;
+    font-family: $font-family;
+
+    .breadcrumb-item {
+        font-size: $font-size-small;
+        font-weight: $font-weight-regular;
+        text-decoration: none;
+        color: $color-text-tertiary;
+
+        &::after {
+            content: '/';
+            margin-left: 0.5rem;
+            color: $color-text-secondary;
+        }
+
+        &:last-child::after {
+            content: '';
+        }
+    }
+}

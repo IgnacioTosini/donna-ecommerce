@@ -1,0 +1,18 @@
+@use '@/styles/variables' as *;
+
+.category-page {
+    display: flex;
+    flex-direction: column;
+
+    .category-page-content {
+        display: flex;
+        width: 100%;
+        max-width: 1200px;
+        padding: 2rem 0;
+        margin-inline: auto;
+
+        @media (max-width: 767px) {
+            flex-direction: column;
+        }
+    }
+}

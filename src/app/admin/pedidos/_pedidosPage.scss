@@ -1,0 +1,42 @@
+@use '@/styles/variables' as *;
+
+.pedidos-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    padding: 3rem;
+
+    .pedidos-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        width: 100%;
+
+        @media (max-width: 768px) {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    .pedidos-header-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .pedidos-title {
+        color: $color-text-tertiary;
+        font-family: $font-family-display;
+        font-size: $font-size-xxlarge;
+        font-weight: $font-weight-regular;
+    }
+
+    .pedidos-description {
+        color: $color-text-tertiary;
+        font-family: $font-family;
+        font-size: $font-size-medium;
+        font-weight: $font-weight-light;
+    }
+}

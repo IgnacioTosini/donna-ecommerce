@@ -1,0 +1,27 @@
+@use '@/styles/variables' as *;
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba($border-color, .25);
+
+    span {
+        font-size: $font-size-large;
+        color: rgba($color-text-tertiary, .55);
+    }
+
+    input {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: $font-size-normal;
+        background: transparent;
+        color: $color-text-tertiary;
+
+        &::placeholder {
+            color: rgba($color-text-tertiary, .5);
+        }
+    }
+}

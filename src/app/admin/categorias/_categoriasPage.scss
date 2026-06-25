@@ -1,0 +1,59 @@
+@use '@/styles/variables' as *;
+
+.categorias-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 3rem;
+    width: 100%;
+
+    .categorias-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 0.5rem;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .categorias-header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .categorias-title {
+                font-family: $font-family-display;
+                font-size: $font-size-xxlarge;
+                font-weight: $font-weight-regular;
+                color: $color-text-tertiary;
+            }
+
+            .categorias-description {
+                font-family: $font-family;
+                font-size: $font-size-medium;
+                font-weight: $font-weight-light;
+                color: $color-text-tertiary;
+            }
+        }
+
+        .categorias-button {
+            font-family: $font-family;
+            font-size: $font-size-normal;
+            font-weight: $font-weight-medium;
+            color: $color-text;
+            background-color: $color-primary-button;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            width: fit-content;
+            transition: background-color 0.3s;
+
+            &:hover {
+                background-color: $color-hover-primary;
+            }
+        }
+    }
+}

@@ -1,0 +1,180 @@
+@use '@/styles/variables' as *;
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2.5rem 1.25rem;
+    margin-top: 2.5rem;
+    width: 100%;
+    padding: 0 1rem;
+
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+        color: $color-text-tertiary;
+        max-width: 300px;
+
+        @media (hover: none) {
+            .product-cart-button {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+        }
+
+        &:hover,
+        &:focus-within {
+            .product-image-hover {
+                opacity: 1;
+            }
+
+            .product-cart-button {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+        }
+
+        .product-image-wrapper {
+            position: relative;
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            background-color: $color-text;
+
+            .product-discount {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                z-index: 1;
+                padding: 0.25rem 0.5rem;
+                background-color: $color-error;
+                color: $primary-color;
+                font-family: $font-family;
+                font-size: $font-size-xsmall;
+                font-weight: $font-weight-bold;
+                text-transform: uppercase;
+            }
+        }
+
+        .product-image {
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.35s ease;
+        }
+
+        .product-image-hover {
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .product-cart-button {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            min-height: 40px;
+            border: 0;
+            background-color: $secondary-color;
+            color: $primary-color;
+            font-family: $font-family;
+            font-size: $font-size-small;
+            font-weight: $font-weight-bold;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(100%);
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+
+            svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            &:hover {
+                background-color: $color-primary-button;
+            }
+
+            &:disabled {
+                cursor: not-allowed;
+                opacity: 0.72;
+            }
+        }
+
+        .product-info {
+            padding-top: 1rem;
+            text-align: left;
+            width: 100%;
+            text-decoration: none;
+        }
+
+        .product-category {
+            margin: 0 0 0.35rem;
+            color: $border-color;
+            font-family: $font-family-display;
+            font-size: $font-size-small;
+            font-weight: $font-weight-regular;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .product-name {
+            margin: 0 0 0.4rem;
+            color: $color-text-tertiary;
+            font-family: $font-family-display;
+            font-size: $font-size-normal;
+            font-weight: $font-weight-regular;
+            line-height: 1.25;
+            overflow: hidden;
+            min-height: 2.5rem;
+            overflow-wrap: anywhere;
+        }
+
+        .product-prices {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            width: 100%;
+
+            .product-price {
+                margin: 0;
+                color: $color-text-tertiary;
+                font-family: $font-family;
+                font-size: $font-size-medium;
+                font-weight: $font-weight-bold;
+                line-height: 1.2;
+            }
+
+            .product-compare-at-price {
+                margin: 0;
+                color: $color-text-secondary;
+                font-family: $font-family;
+                font-size: $font-size-small;
+                font-weight: $font-weight-bold;
+                line-height: 1.2;
+                text-decoration: line-through;
+            }
+        }
+    }
+
+    @media (max-width: 640px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem 0.75rem;
+    }
+
+    .product-card {
+        .product-cart-button {
+            min-height: 36px;
+            font-size: $font-size-xsmall;
+        }
+    }
+}

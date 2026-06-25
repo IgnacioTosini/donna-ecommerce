@@ -1,0 +1,204 @@
+@use '@/styles/variables' as *;
+
+.orders-table-wrapper {
+    width: 100%;
+    border: 1px solid rgba($border-color, .3);
+    background: $primary-color;
+
+    .orders-empty {
+        padding: 1.5rem;
+        color: rgba($color-text-tertiary, .6);
+        font-size: $font-size-normal;
+        text-align: center;
+    }
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        padding: 1rem;
+        border-bottom: 1px solid rgba($border-color, .25);
+        background: $tertiary-color;
+        color: rgba($color-text-tertiary, .75);
+        font-size: $font-size-small;
+        font-weight: $font-weight-medium;
+        letter-spacing: .18em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .table-sort-button {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+        letter-spacing: inherit;
+        padding: 0;
+        text-align: inherit;
+        text-transform: inherit;
+
+        &:hover {
+            color: $color-hover-primary;
+        }
+    }
+
+    .table-sort-arrow {
+        color: rgba($color-text-tertiary, .55);
+        font-size: $font-size-small;
+        letter-spacing: 0;
+    }
+
+    td {
+        padding: .95rem 1rem;
+        border-bottom: 1px solid rgba($border-color, .22);
+        color: $color-text-tertiary;
+        font-size: $font-size-normal;
+        vertical-align: middle;
+    }
+
+    tr:hover {
+        background: rgba($color-hover-secondary, .45);
+    }
+
+    th:last-child,
+    td:last-child {
+        text-align: right;
+    }
+}
+
+.order-customer {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+
+    strong {
+        font-weight: $font-weight-semibold;
+    }
+
+    span {
+        color: rgba($color-text-tertiary, .65);
+        font-size: $font-size-small;
+    }
+}
+
+.order-items-count,
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    padding: .28rem .6rem;
+    font-size: $font-size-small;
+    font-weight: $font-weight-medium;
+}
+
+.order-items-count {
+    background: $tertiary-color;
+    color: $color-text-tertiary;
+}
+
+.order-status-pending {
+    background: #fff5dc;
+    color: #9a6500;
+}
+
+.order-status-confirmed {
+    background: #e8f0ff;
+    color: #1f59b6;
+}
+
+.order-status-shipped {
+    background: #eef0ff;
+    color: #4f46a6;
+}
+
+.order-status-delivered {
+    background: #e9f9ef;
+    color: #008f4c;
+}
+
+.order-status-cancelled {
+    background: #ffecec;
+    color: #b42318;
+}
+
+.order-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        color: $color-text-tertiary;
+        cursor: pointer;
+        font-size: $font-size-medium;
+
+        &:hover {
+            opacity: .6;
+        }
+    }
+}
+
+@media (max-width: 920px) {
+    .orders-table-wrapper {
+        border: none;
+    }
+
+    .orders-table {
+        thead {
+            display: none;
+        }
+
+        tbody {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        tr {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba($border-color, .25);
+            background: $primary-color;
+        }
+
+        td {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border-bottom: 1px solid rgba($border-color, .15);
+            text-align: right;
+
+            &::before {
+                content: attr(data-label);
+                color: rgba($color-text-tertiary, .65);
+                font-size: $font-size-small;
+                font-weight: $font-weight-semibold;
+                letter-spacing: .12em;
+                text-align: left;
+                text-transform: uppercase;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        .order-customer,
+        .order-actions {
+            margin-left: auto;
+        }
+    }
+}
