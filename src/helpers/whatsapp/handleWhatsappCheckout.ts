@@ -1,6 +1,6 @@
 import { CartItem } from "@/store/cart.store";
 import { buildWhatsappMessage } from "./buildWhatsappMessage";
-import { getWhatsappUrl } from "./getWhatsappUrl";
+import { openWhatsappUrl, shouldUseWhatsappAppUrl } from "./getWhatsappUrl";
 import { CheckoutData } from "@/types/checkout.types";
 import { createOrderAction } from "@/app/actions/utils/orders";
 
@@ -26,8 +26,9 @@ export async function handleWhatsappCheckout({
         };
     }
 
+    const openInWhatsappApp = shouldUseWhatsappAppUrl();
     const whatsappWindow =
-        typeof window !== "undefined"
+        typeof window !== "undefined" && !openInWhatsappApp
             ? window.open("", "_blank")
             : null;
 
@@ -70,12 +71,10 @@ export async function handleWhatsappCheckout({
         subtotal,
     });
 
-    const whatsappUrl = getWhatsappUrl(whatsappPhone, message);
-
     if (whatsappWindow) {
-        whatsappWindow.location.href = whatsappUrl;
+        openWhatsappUrl(whatsappPhone, message, whatsappWindow);
     } else {
-        window.location.href = whatsappUrl;
+        openWhatsappUrl(whatsappPhone, message);
     }
 
     return {
