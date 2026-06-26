@@ -1,20 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
 import { Category, ProductWithRelations } from '@/types';
-import { CategoryFilterSection } from './categoryFilterSection/CategoryFilterSection';
-import { ColorFilterSection } from './colorFilterSection/ColorFilterSection';
-import { GenderFilterSection } from './genderFilterSection/GenderFilterSection';
-import { PriceFilterSection } from './priceFilterSection/PriceFilterSection';
-import { SizeFilterSection } from './sizeFilterSection/SizeFilterSection';
+import { CategoryFilterMobileBar } from './CategoryFilterMobileBar';
+import { CategoryFilterMobileSheet } from './CategoryFilterMobileSheet';
+import { CategoryFilterSections } from './CategoryFilterSections';
+import { buildCategoryFilterChips } from './categoryFilterChips';
 import { CategoryFilters } from './categoryFilterSidebar.types';
-import { normalizeColorValue } from '@/utils/colorHelpers';
-import {
-    PRODUCT_SIZE_ORDER,
-    normalizeSizeValue,
-    sizesMatch,
-    sortProductSizes,
-} from '@/utils/sizeHelpers';
+import { useCategoryFilterOptions } from './useCategoryFilterOptions';
+import { useMobileFilterSheet } from './useMobileFilterSheet';
 import './_categoryFilterSidebar.scss';
 
 interface Props {
@@ -30,27 +23,7 @@ export const CategoryFilterSidebar = ({
     priceProducts,
     filters = {},
 }: Props) => {
-    const sizes = new Set<string>(PRODUCT_SIZE_ORDER);
-    const colors = new Set<string>();
-    const activeSize = normalizeSizeValue(filters.size);
-
-    products?.forEach((product) => {
-        product.variants.forEach((variant) => {
-            const hasAvailableStock = variant.sizes.some((size) =>
-                size.stock > 0 &&
-                (!activeSize || sizesMatch(size.size, activeSize))
-            );
-            const normalizedColor = normalizeColorValue(variant.colorHex);
-
-            if (hasAvailableStock && normalizedColor) {
-                colors.add(normalizedColor);
-            }
-
-            variant.sizes.forEach((size) => {
-                sizes.add(size.size);
-            });
-        });
-    });
+    const mobileFilterSheet = useMobileFilterSheet();
 
     const buildFilterHref = (
         nextFilters: Partial<CategoryFilters>,
@@ -74,52 +47,52 @@ export const CategoryFilterSidebar = ({
 
         return queryString ? `/categoria?${queryString}` : '/categoria';
     };
+    const filterOptions = useCategoryFilterOptions({
+        products,
+        priceProducts,
+        filters,
+    });
+    const activeFilterChips = buildCategoryFilterChips({
+        categories,
+        filters,
+        selectedMaxPrice: filterOptions.selectedMaxPrice,
+        buildFilterHref,
+    });
+    const activeFilterCount = activeFilterChips.length;
 
-    const sortedSizes = sortProductSizes([...sizes]);
-
-    const sortedColors = [...colors].sort();
-    const priceRange = useMemo(() => {
-        const productPrices = (priceProducts ?? products)?.map((product) => product.price) ?? [];
-
-        return {
-            min: productPrices.length ? Math.floor(Math.min(...productPrices)) : 0,
-            max: productPrices.length ? Math.ceil(Math.max(...productPrices)) : 0,
-        };
-    }, [priceProducts, products]);
-    const parsedMaxPrice = filters.maxPrice ? Number(filters.maxPrice) : priceRange.max;
-    const selectedMaxPrice = Number.isFinite(parsedMaxPrice)
-        ? Math.min(Math.max(parsedMaxPrice, priceRange.min), priceRange.max)
-        : priceRange.max;
-    const minPrice = priceRange.min;
-    const maxAvailablePrice = priceRange.max;
+    const renderFilterSections = () => (
+        <CategoryFilterSections
+            categories={categories}
+            filters={filters}
+            sortedSizes={filterOptions.sortedSizes}
+            sortedColors={filterOptions.sortedColors}
+            minPrice={filterOptions.minPrice}
+            maxAvailablePrice={filterOptions.maxAvailablePrice}
+            selectedMaxPrice={filterOptions.selectedMaxPrice}
+            buildFilterHref={buildFilterHref}
+            onApplyPrice={mobileFilterSheet.close}
+        />
+    );
 
     return (
-        <aside className="category-filter-sidebar">
-            <GenderFilterSection
-                filters={filters}
-                buildFilterHref={buildFilterHref}
+        <>
+            <CategoryFilterMobileBar
+                isOpen={mobileFilterSheet.isOpen}
+                activeFilterChips={activeFilterChips}
+                onOpen={mobileFilterSheet.open}
             />
-            <CategoryFilterSection
-                categories={categories}
-                filters={filters}
-                buildFilterHref={buildFilterHref}
-            />
-            <SizeFilterSection
-                sizes={sortedSizes}
-                filters={filters}
-                buildFilterHref={buildFilterHref}
-            />
-            <ColorFilterSection
-                colors={sortedColors}
-                filters={filters}
-                buildFilterHref={buildFilterHref}
-            />
-            <PriceFilterSection
-                filters={filters}
-                minPrice={minPrice}
-                maxAvailablePrice={maxAvailablePrice}
-                selectedMaxPrice={selectedMaxPrice}
-            />
-        </aside>
+
+            <aside className="category-filter-sidebar category-filter-sidebar-desktop">
+                {renderFilterSections()}
+            </aside>
+
+            <CategoryFilterMobileSheet
+                isOpen={mobileFilterSheet.isOpen}
+                activeFilterCount={activeFilterCount}
+                onClose={mobileFilterSheet.close}
+            >
+                {renderFilterSections()}
+            </CategoryFilterMobileSheet>
+        </>
     );
 };

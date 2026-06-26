@@ -11,6 +11,7 @@ type Props = {
     minPrice: number;
     maxAvailablePrice: number;
     selectedMaxPrice: number;
+    onApply?: () => void;
 };
 
 export const PriceFilterSection = ({
@@ -18,6 +19,7 @@ export const PriceFilterSection = ({
     minPrice,
     maxAvailablePrice,
     selectedMaxPrice,
+    onApply,
 }: Props) => {
     const router = useRouter();
 
@@ -40,6 +42,7 @@ export const PriceFilterSection = ({
         router.push(queryString ? `/categoria?${queryString}` : '/categoria', {
             scroll: false,
         });
+        onApply?.();
     };
 
     return (
