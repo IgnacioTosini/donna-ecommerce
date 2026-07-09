@@ -15,47 +15,47 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://donna-ecommerce.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"),
   title: {
-    default: "Donna | Indumentaria y moda online",
-    template: "%s | Donna",
+    default: "Tienda Demo | Indumentaria y moda online",
+    template: "%s | Tienda Demo",
   },
   description:
-    "Comprá indumentaria seleccionada para mujer y hombre en Donna. Descubrí novedades, favoritos de temporada y productos destacados.",
-  applicationName: "Donna",
+    "Comprá indumentaria seleccionada en una tienda demo. Descubrí novedades, favoritos de temporada y productos destacados.",
+  applicationName: "Tienda Demo",
   keywords: [
-    "Donna",
+    "Tienda Demo",
     "indumentaria",
     "moda online",
     "ropa de mujer",
     "ropa de hombre",
     "ecommerce de moda",
   ],
-  authors: [{ name: "Donna" }],
-  creator: "Donna",
-  publisher: "Donna",
+  authors: [{ name: "Tienda Demo" }],
+  creator: "Tienda Demo",
+  publisher: "Tienda Demo",
   openGraph: {
     type: "website",
     locale: "es_AR",
-    siteName: "Donna",
-    title: "Donna | Indumentaria y moda online",
+    siteName: "Tienda Demo",
+    title: "Tienda Demo | Indumentaria y moda online",
     description:
-      "Descubrí novedades, favoritos de temporada y productos destacados en Donna.",
+      "Descubrí novedades, favoritos de temporada y productos destacados en una tienda demo.",
     url: "/",
     images: [
       {
         url: "/heroImage.jpg",
         width: 1200,
         height: 630,
-        alt: "Donna",
+        alt: "Tienda Demo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Donna | Indumentaria y moda online",
+    title: "Tienda Demo | Indumentaria y moda online",
     description:
-      "Descubrí novedades, favoritos de temporada y productos destacados en Donna.",
+      "Descubrí novedades, favoritos de temporada y productos destacados en una tienda demo.",
     images: ["/heroImage.jpg"],
   },
   robots: {

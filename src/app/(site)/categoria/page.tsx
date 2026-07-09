@@ -1,4 +1,4 @@
-import { getCategories } from "@/app/actions/category.action";
+import { getCategoriesWithProductCount } from "@/app/actions/category.action";
 import { getFilteredProducts, getPaginatedFilteredProducts } from "@/app/actions/product.action";
 import type { ProductSortOption } from "@/app/actions/product.action";
 import { CategoryPageView } from "@/components/sections/categoryPage/CategoryPageView";
@@ -51,7 +51,7 @@ const parsePositiveIntegerParam = (value?: string, fallback = 1) => {
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
     const params = await searchParams;
-    const categories = await getCategories();
+    const categories = await getCategoriesWithProductCount();
     const category = categories.find((item) => item.slug === params.category);
     const gender = parseGender(params.gender);
     const categoryName = category?.name ?? (gender ? genderLabels[gender] : "Productos");
@@ -61,7 +61,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
             ? `${categoryName} destacados`
             : categoryName;
     const description = category?.description
-        ?? `Explorá productos de ${categoryName.toLowerCase()} en Donna.`;
+        ?? `Explorá productos de ${categoryName.toLowerCase()} en Tienda Demo.`;
 
     return {
         title,
@@ -70,7 +70,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
             canonical: "/categoria",
         },
         openGraph: {
-            title: `${title} | Donna`,
+            title: `${title} | Tienda Demo`,
             description,
             url: "/categoria",
             images: category?.imageUrl
@@ -111,7 +111,7 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
     };
 
     const [categories, paginatedProducts, productsForFilters, productsForPriceRange] = await Promise.all([
-        getCategories(),
+        getCategoriesWithProductCount(),
         getPaginatedFilteredProducts({
             ...productFilters,
             maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { ProductFormSchema, CreateProductDto, CreateProductForm, ProductVariantSchema } from '@/schemas';
 import { createProductWithImages, updateProductWithImages, getProductById, ExistingImage } from '@/app/actions/product.action';
-import { getCategories } from '@/app/actions/category.action';
+import { getCategoriesWithProductCount } from '@/app/actions/category.action';
 import { Category } from '@/types';
 import { useProductModalStore } from '@/store/product.store';
 import { PRODUCT_SIZE_ORDER } from '@/utils/sizeHelpers';
@@ -172,7 +172,7 @@ export default function ProductForm() {
 
     useEffect(() => {
         const loadCategories = async () => {
-            const data = await getCategories();
+            const data = await getCategoriesWithProductCount();
             setCategories(data);
         };
 

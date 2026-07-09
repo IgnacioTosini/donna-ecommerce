@@ -14,7 +14,9 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba($secondary-color, .7);
+        background:
+            linear-gradient(115deg, rgba($secondary-color, 0.82) 12%, rgba($secondary-color, 0.62) 48%, rgba($secondary-color, 0.7) 100%),
+            radial-gradient(circle at 78% 24%, rgba($color-hover-primary, 0.24), rgba($secondary-color, 0) 40%);
         z-index: 2;
     }
 
@@ -48,6 +50,8 @@
         line-height: .95;
         max-width: 620px;
         margin-bottom: 1.75rem;
+        text-wrap: balance;
+        text-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
     }
 
     p {
@@ -71,17 +75,24 @@
             padding: 0 2rem;
             background: $color-primary-button;
             color: $color-text;
+            border: 1px solid rgba($color-text, 0.22);
             border-radius: 2rem;
             text-decoration: none;
             text-transform: uppercase;
             letter-spacing: .18em;
             font-size: $font-size-small;
             font-weight: $font-weight-bold;
-            transition: all .3s ease-in-out;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+            transition: background-color .3s ease-in-out, color .3s ease-in-out, border-color .3s ease-in-out;
 
             &:hover {
                 background: $color-hover-primary;
+                border-color: $color-hover-primary;
                 color: $color-text-tertiary;
+            }
+
+            &:focus-visible {
+                @include focus-ring;
             }
         }
     }
@@ -109,6 +120,22 @@
 
         h1 {
             font-size: clamp(2.6rem, 13vw, 4rem);
+        }
+
+        .banner-section-eyebrow {
+            letter-spacing: .22em;
+        }
+
+        p {
+            font-size: $font-size-normal;
+        }
+
+        .banner-section-actions {
+            width: 100%;
+
+            a {
+                width: 100%;
+            }
         }
     }
 }

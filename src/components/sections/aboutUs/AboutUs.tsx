@@ -31,22 +31,22 @@ export const AboutUs = () => {
     return (
         <div ref={sectionRef} className="about-us-section">
             <div className="about-us-container">
-                <Title title='Nuestra esencia' subTitle='Conoce DONNA' />
+                <Title title='Nuestra esencia' subTitle='Conoce Tienda Demo' />
                 <div className="about-us-content">
                     <div className="about-us-description">
                         <h3 className="about-us-title">Más que una tienda</h3>
-                        <p className="about-us-text">DONNA nació en Río Segundo, Córdoba, como un espacio dedicado a quienes buscan calzado y ropa con identidad. Seleccionamos cada pieza pensando en la versatilidad, el confort y ese detalle que marca la diferencia. Nuestras colecciones mezclan tendencias actuales con propuestas atemporales, ideales para armar looks propios.</p>
-                        <p className="about-us-text">Trabajamos con nuevos drops constantes, cuotas sin interés y envíos a todo el país para que tu próximo outfit esté siempre a un click.</p>
+                        <p className="about-us-text">Tienda Demo es un showroom ficticio creado para mostrar una experiencia de ecommerce de indumentaria. Seleccionamos productos de muestra pensando en la versatilidad, el confort y ese detalle que marca la diferencia. Las colecciones combinan tendencias actuales con propuestas atemporales, ideales para armar looks propios.</p>
+                        <p className="about-us-text">Este contenido es de demostración e incluye nuevos drops, cuotas sin interés y envíos simulados para presentar el flujo completo de compra.</p>
                         <button className="about-us-button" onClick={() => window.location.href = '/categoria?sort=newest'}>VER NUEVOS INGRESOS <FaArrowRight className='about-us-button-icon' /></button>
                     </div>
                     <div className="about-us-visit">
-                        <h3 className="about-us-title">Visitá DONNA</h3>
-                        <p className="about-us-text">Pasá por nuestro local, probate lo nuevo y descubrí las promos del día. También podés escribirnos por Instagram o WhatsApp y te asesoramos con tu pedido.</p>
+                        <h3 className="about-us-title">Visitá Tienda Demo</h3>
+                        <p className="about-us-text">Pasá por nuestro local de muestra, probate lo nuevo y descubrí las promos del día. También podés escribirnos por Instagram o WhatsApp y te asesoramos con tu pedido.</p>
                         <div className="about-us-location">
                             <FaMapMarkerAlt className='about-us-location-icon' />
                             <div className="about-us-location-text">
-                                <p className='about-us-location-line'>Leandro N. Alem esq. Córdoba</p>
-                                <p className='about-us-location-line'>Río Segundo, Córdoba, Argentina</p>
+                                <p className='about-us-location-line'>Av. Principal 123</p>
+                                <p className='about-us-location-line'>Ciudad Demo, Argentina</p>
                             </div>
                         </div>
                         <div className="about-us-hours">
@@ -56,7 +56,7 @@ export const AboutUs = () => {
                                 <p className='about-us-hours-line'>9:00 a 13:00 hs | 17:00 a 21:00 hs</p>
                             </div>
                         </div>
-                        <a href='https://www.instagram.com/donna_rio/' target='_blank' rel='noopener noreferrer' className="about-us-button">
+                        <a href='https://www.instagram.com/example/' target='_blank' rel='noopener noreferrer' className="about-us-button">
                             <FaInstagram className='about-us-button-icon' />CONTACTO
                         </a>
                     </div>

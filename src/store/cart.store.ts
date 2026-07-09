@@ -244,7 +244,7 @@ export const useCartStore =
                 },
             }),
             {
-                name: "donna-cart",
+                name: "demo-cart",
                 version: 2,
                 storage:
                     createJSONStorage(

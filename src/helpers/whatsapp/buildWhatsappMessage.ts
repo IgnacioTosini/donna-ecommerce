@@ -26,7 +26,7 @@ Subtotal: $${(item.price * item.quantity).toLocaleString("es-AR")}`
         )
         .join("\n\n");
 
-    return `Hola Donna.
+    return `Hola Tienda Demo.
 
 Quiero confirmar el pedido #${orderId}
 

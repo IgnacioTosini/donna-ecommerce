@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Resumen administrativo de Donna.",
+  description: "Resumen administrativo de Tienda Demo.",
 };
 
 export default async function AdminPage() {

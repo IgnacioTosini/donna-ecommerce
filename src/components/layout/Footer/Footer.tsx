@@ -34,12 +34,17 @@ export default function Footer() {
 
   return (
     <footer ref={footerRef} className="footer">
+      <div className='footerValueStrip'>
+        <p>Envios a todo el pais</p>
+        <p>3 y 6 cuotas sin interes</p>
+        <p>Cambios simples dentro de 30 dias</p>
+      </div>
       <div className='footerContent'>
         <div className='footerContentHeader'>
-          <h1>Donna</h1>
-          <p className='footerContentHeaderDescription'>Moda atemporal para quienes buscan elegancia, calidad y un estilo propio. Confeccionado con materiales nobles y atención al detalle.</p>
+          <h1>Tienda Demo</h1>
+          <p className='footerContentHeaderDescription'>Moda de muestra para quienes buscan una experiencia de compra simple, clara y lista para adaptar a cualquier marca.</p>
           <div className='footerContentHeaderSocialMedia'>
-            <Link href='https://www.instagram.com/donna_rio/' target='_blank' rel='noopener noreferrer'>
+            <Link href='https://www.instagram.com/example/' target='_blank' rel='noopener noreferrer'>
               <IoLogoInstagram size={24} />
             </Link>
             <Link href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`} target='_blank' rel='noopener noreferrer'>
@@ -47,41 +52,45 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-        <ul className='footerContentNavigation'>
+        <div className='footerContentNavigationColumn'>
           <h2 className='footerContentNavigationTitle'>Tienda</h2>
-          {
-            navigationItems.map(item => (
-              <li key={item.id}>
-                <Link
-                  href={item.href}
-                  onClick={(event) => {
-                    if (!item.sectionId) return;
-                    handleSectionNavigation({
-                      event,
-                      pathname,
-                      sectionId: item.sectionId,
-                    });
-                  }}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))
-          }
-        </ul>
-        <ul className='footerContentPayment'>
+          <ul className='footerContentNavigation'>
+            {
+              navigationItems.map(item => (
+                <li key={item.id}>
+                  <Link
+                    href={item.href}
+                    onClick={(event) => {
+                      if (!item.sectionId) return;
+                      handleSectionNavigation({
+                        event,
+                        pathname,
+                        sectionId: item.sectionId,
+                      });
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div className='footerContentPaymentColumn'>
           <h2 className='footerContentPaymentTitle'>Pago seguro:</h2>
-          {
-            paymentMethods.map(method => (
-              <li key={method.name} className='footerContentPaymentItem'>{method.name}</li>
-            ))
-          }
-        </ul>
+          <ul className='footerContentPayment'>
+            {
+              paymentMethods.map(method => (
+                <li key={method.name} className='footerContentPaymentItem'>{method.name}</li>
+              ))
+            }
+          </ul>
+        </div>
       </div>
       <div className='footerContentFooter'>
         <div className='footerContentInfo'>
-          <h4>© {new Date().getFullYear()} DONNA. Todos los derechos reservados.</h4>
-          <p>Diseñado por Ignacio Tosini</p>
+          <h4>© {new Date().getFullYear()} Tienda Demo. Todos los derechos reservados.</h4>
+          <p>Creado por Ignacio Tosini</p>
         </div>
       </div>
     </footer>

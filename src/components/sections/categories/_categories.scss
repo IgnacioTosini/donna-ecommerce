@@ -2,7 +2,9 @@
 
 .categories-section {
     padding: 5rem 1rem;
-    background: $primary-color;
+    background:
+        radial-gradient(circle at 12% 8%, rgba($color-hover-primary, 0.1), rgba($primary-color, 0) 42%),
+        $primary-color;
 
     .categories-wrapper {
         width: 100%;
@@ -59,12 +61,13 @@
     .category-card {
         position: relative;
         display: block;
-        height: 520px;
+        min-height: clamp(360px, 46vw, 520px);
         overflow: hidden;
         text-decoration: none;
         background: $tertiary-color;
 
-        &:hover {
+        &:hover,
+        &:focus-within {
             .category-image {
                 transform: scale(1.04);
             }
@@ -102,12 +105,13 @@
     }
 
     .category-products {
+        @include badge-chip(rgba($secondary-color, 0.34), $color-text, rgba($color-text, 0.35));
         margin-bottom: .4rem;
-        font-size: $font-size-small;
-        font-weight: $font-weight-bold;
+        font-size: $font-size-xsmall;
+        font-weight: $font-weight-semibold;
         letter-spacing: .16em;
         text-transform: uppercase;
-        color: rgba($color-text, .75);
+        color: $color-text;
     }
 
     .category-name {
@@ -139,5 +143,31 @@
             opacity .3s ease,
             transform .3s ease,
             color .2s ease;
+
+        &:focus-visible {
+            @include focus-ring;
+        }
+    }
+
+    @media (hover: none) {
+        .category-link {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 640px) {
+        padding: 3.8rem 0.75rem 2.9rem;
+
+        .category-content {
+            left: 1.2rem;
+            right: 1.2rem;
+            bottom: 1.2rem;
+        }
+
+        .category-name {
+            font-size: clamp(1.55rem, 8vw, 2.2rem);
+            margin-bottom: 0.75rem;
+        }
     }
 }

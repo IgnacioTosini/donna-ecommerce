@@ -240,3 +240,93 @@ export const animateProductDetails = (section: HTMLElement) => {
         );
     }
 };
+
+export const animateEditorialSpotlight = (section: HTMLElement) => {
+    if (prefersReducedMotion()) return;
+
+    registerScrollTrigger();
+
+    const copy = section.querySelector('.editorial-spotlight-copy');
+    const media = section.querySelector('.editorial-spotlight-media');
+    const badge = section.querySelector('.editorial-spotlight-badge');
+    const copyItems = section.querySelectorAll(
+        '.editorial-spotlight-kicker, .editorial-spotlight-copy h2, .editorial-spotlight-copy p, .editorial-spotlight-actions'
+    );
+
+    const tl = gsap.timeline({
+        defaults: {
+            ease: 'power3.out',
+        },
+        scrollTrigger: {
+            trigger: section,
+            start: 'top 84%',
+            once: true,
+        },
+    });
+
+    if (media) {
+        tl.fromTo(
+            media,
+            {
+                x: 28,
+                opacity: 0,
+                scale: 0.98,
+            },
+            {
+                x: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.92,
+            }
+        );
+    }
+
+    if (copy) {
+        tl.fromTo(
+            copy,
+            {
+                x: -24,
+                opacity: 0,
+            },
+            {
+                x: 0,
+                opacity: 1,
+                duration: 0.78,
+            },
+            '-=0.68'
+        );
+    }
+
+    if (copyItems.length) {
+        tl.fromTo(
+            copyItems,
+            {
+                y: 18,
+                opacity: 0,
+            },
+            {
+                y: 0,
+                opacity: 1,
+                stagger: 0.07,
+                duration: 0.58,
+            },
+            '-=0.45'
+        );
+    }
+
+    if (badge) {
+        tl.fromTo(
+            badge,
+            {
+                y: 14,
+                opacity: 0,
+            },
+            {
+                y: 0,
+                opacity: 1,
+                duration: 0.52,
+            },
+            '-=0.3'
+        );
+    }
+};

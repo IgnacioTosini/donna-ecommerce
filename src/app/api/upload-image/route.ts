@@ -5,7 +5,7 @@ import { isAdminAuthenticated } from "@/lib/admin-session";
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
-const CLOUDINARY_UPLOAD_FOLDER = process.env.CLOUDINARY_UPLOAD_FOLDER ?? "Crosti Focaccias";
+const CLOUDINARY_UPLOAD_FOLDER = process.env.CLOUDINARY_UPLOAD_FOLDER ?? "demo-store";
 
 const buildSignature = (params: Record<string, string | number>, apiSecret: string) => {
     const payload = Object.entries(params)

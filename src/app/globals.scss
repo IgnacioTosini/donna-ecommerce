@@ -1,15 +1,29 @@
+@use '@/styles/variables' as *;
+
+:root {
+  --navbar-height: clamp(76px, 9vw, 96px);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+  font-family: $font-family;
 }
 
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  scroll-padding-top: 96px;
-  background-color: #FDFCFB;
+  scroll-padding-top: var(--navbar-height);
+  background-color: $surface-background;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  @include focus-ring;
 }
 
 .admin-layout {
@@ -37,34 +51,45 @@ html {
   }
 
   p {
-    color: #d4a767;
-    font-size: 0.75rem;
+    color: $color-text-quaternary;
+    font-size: $font-size-small;
     font-weight: 700;
     letter-spacing: 0.2em;
   }
 
   h1 {
-    color: #000;
-    font-family: var(--font-playfair-display), Georgia, serif;
+    color: $color-text-tertiary;
+    font-family: $font-family-display;
     font-size: 2.25rem;
     font-weight: 400;
   }
 
   span {
-    color: rgba(0, 0, 0, 0.68);
+    color: rgba($color-text-tertiary, 0.68);
     font-size: 0.95rem;
     line-height: 1.6;
   }
 
   a {
     margin-top: 0.75rem;
-    background: #121416;
-    color: #fff;
-    font-size: 0.75rem;
+    background: $color-primary-button;
+    color: $color-text;
+    font-size: $font-size-small;
     font-weight: 700;
     letter-spacing: 0.14em;
     padding: 0.9rem 1.2rem;
     text-decoration: none;
     text-transform: uppercase;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -10,7 +10,49 @@
     text-align: center;
     padding: 2rem 1rem;
     border-top: 1px solid $border-color;
-    z-index: 10000;
+    z-index: 1;
+
+    .footerValueStrip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 1200px;
+        margin-bottom: 1.4rem;
+        padding: 0.8rem;
+        border: 1px solid rgba($border-color, 0.35);
+        border-radius: 12px;
+        background:
+            linear-gradient(120deg, rgba($color-hover-primary, 0.14), rgba($primary-color, 0.04) 38%),
+            rgba($primary-color, 0.04);
+
+        p {
+            position: relative;
+            color: $color-text;
+            font-size: $font-size-small;
+            font-weight: $font-weight-medium;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+
+            &:not(:last-child)::after {
+                content: '•';
+                margin-left: 0.75rem;
+                color: rgba($color-text, 0.5);
+            }
+        }
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+            gap: 0.35rem;
+
+            p:not(:last-child)::after {
+                content: '';
+                margin: 0;
+            }
+        }
+    }
 
     .footerContent {
         display: flex;
@@ -45,7 +87,7 @@
                 font-size: $font-size-large;
                 font-weight: $font-weight-regular;
                 font-family: $font-family-display;
-                letter-spacing: 0.3em;
+                letter-spacing: 0.16em;
                 text-transform: uppercase;
                 line-height: 32px;
             }
@@ -66,10 +108,39 @@
                     color: $color-text-secondary;
                     transition: color 0.3s ease;
 
+                    &:first-child {
+                        &:hover {
+                            color: $color-instagram;
+                        }
+                    }
+
+                    &:last-child {
+                        &:hover {
+                            color: $color-whatsapp;
+                        }
+                    }
+
                     &:hover {
-                        color: $color-text-quaternary;
+                        opacity: 1;
+                    }
+
+                    &:focus-visible {
+                        @include focus-ring;
                     }
                 }
+            }
+        }
+
+        .footerContentNavigationColumn,
+        .footerContentPaymentColumn {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+
+            @media (max-width: 768px) {
+                align-items: center;
+                text-align: center;
             }
         }
 
@@ -92,7 +163,15 @@
                     &:hover {
                         color: $color-text-quaternary;
                     }
+
+                    &:focus-visible {
+                        @include focus-ring;
+                    }
                 }
+            }
+
+            @media (max-width: 768px) {
+                align-items: center;
             }
         }
 
@@ -171,7 +250,7 @@
 
         p {
             font-family: $font-family;
-            font-size: $font-size-xsmall;
+            font-size: $font-size-small;
             color: $color-text-secondary;
             font-weight: $font-weight-regular;
         }

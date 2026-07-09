@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }
 
     const description = product.description
-        ?? `Comprá ${product.name} en Donna.`;
+        ?? `Comprá ${product.name} en Tienda Demo.`;
 
     return {
         title: product.name,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             canonical: `/producto/${product.slug}`,
         },
         openGraph: {
-            title: `${product.name} | Donna`,
+            title: `${product.name} | Tienda Demo`,
             description,
             url: `/producto/${product.slug}`,
             type: "website",
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         },
         twitter: {
             card: "summary_large_image",
-            title: `${product.name} | Donna`,
+            title: `${product.name} | Tienda Demo`,
             description,
             images: product.images[0]?.url ? [product.images[0].url] : undefined,
         },

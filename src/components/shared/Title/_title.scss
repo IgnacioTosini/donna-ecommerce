@@ -17,19 +17,34 @@
     }
 
     .title-main {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
         font-size: clamp($font-size-small, 1.8vw, $font-size-normal);
         font-weight: $font-weight-regular;
         font-family: $font-family;
         color: $color-text-quaternary;
         text-transform: uppercase;
         letter-spacing: 0.12em;
+
+        &::before {
+            content: '';
+            display: inline-block;
+            width: 42px;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.7;
+        }
     }
 
     .title-sub {
-        font-size: clamp($font-size-xlarge, 5.6vw, $font-size-xxxlarge);
+        max-width: 20ch;
+        font-size: clamp($font-size-xlarge, 5vw, $font-size-xxxlarge);
         font-weight: $font-weight-regular;
         color: $color-text-tertiary;
         letter-spacing: 0.015em;
+        text-wrap: balance;
 
         @media (max-width: 768px) {
             text-align: left;

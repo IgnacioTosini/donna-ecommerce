@@ -5,7 +5,7 @@ import './_productosPage.scss';
 
 export const metadata: Metadata = {
     title: "Productos",
-    description: "Administración de productos de Donna.",
+    description: "Administración de productos de Tienda Demo.",
 };
 
 export default async function ProductosPage() {

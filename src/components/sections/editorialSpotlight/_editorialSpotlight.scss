@@ -1,0 +1,191 @@
+@use '@/styles/variables' as *;
+
+.editorial-spotlight {
+    padding: 4.5rem 1rem;
+    background:
+    radial-gradient(circle at 80% 18%, rgba($editorial-accent, 0.19), rgba($primary-color, 0) 45%),
+    linear-gradient(180deg, $surface-background 0%, $editorial-surface 100%);
+}
+
+.editorial-spotlight-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.editorial-spotlight-copy,
+.editorial-spotlight-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.editorial-spotlight-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: clamp(1.3rem, 3vw, 2.5rem);
+    background: $primary-color;
+    border: 1px solid rgba($border-color, 0.25);
+
+    &::before {
+        content: '"';
+        position: absolute;
+        top: -0.25rem;
+        right: 1.2rem;
+        color: rgba($color-hover-primary, 0.3);
+        font-family: $font-family-display;
+        font-size: clamp(4rem, 7vw, 6.5rem);
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    h2 {
+        max-width: 22ch;
+        font-family: $font-family-display;
+        font-size: clamp(1.7rem, 4vw, 3rem);
+        font-weight: $font-weight-regular;
+        line-height: 1;
+        color: $color-text-tertiary;
+        text-wrap: balance;
+    }
+
+    p {
+        max-width: 46ch;
+        color: rgba($color-text-tertiary, 0.7);
+        font-size: $font-size-medium;
+        line-height: 1.6;
+    }
+}
+
+.editorial-spotlight-kicker {
+    color: $editorial-accent;
+    font-size: $font-size-small;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.editorial-spotlight-note {
+    max-width: 44ch;
+    color: rgba($color-text-tertiary, 0.56);
+    font-size: $font-size-small;
+    letter-spacing: 0.04em;
+}
+
+.editorial-spotlight-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0.75rem 1.1rem;
+        border-radius: 999px;
+        background: $secondary-color;
+        border: 1px solid $secondary-color;
+        color: $primary-color;
+        font-size: $font-size-small;
+        font-weight: $font-weight-semibold;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+
+        &:hover {
+            background: $color-hover-primary;
+            border-color: $color-hover-primary;
+            color: $color-text-tertiary;
+        }
+
+        &:focus-visible {
+            @include focus-ring;
+        }
+
+        &.is-secondary {
+            background: transparent;
+            color: $secondary-color;
+        }
+    }
+}
+
+.editorial-spotlight-media {
+    min-height: clamp(320px, 46vw, 480px);
+    background: $secondary-color;
+
+    &::after {
+        content: '';
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba($secondary-color, 0.08) 0%, rgba($secondary-color, 0.42) 100%);
+    }
+}
+
+.editorial-spotlight-image {
+    position: relative;
+    z-index: 1;
+    object-fit: cover;
+    object-position: center;
+}
+
+.editorial-spotlight-badge {
+    position: absolute;
+    z-index: 3;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    background: rgba($secondary-color, 0.68);
+    backdrop-filter: blur(6px);
+    color: $color-text;
+
+    span {
+        @include badge-chip(rgba($editorial-accent, 0.24), $color-text, rgba($color-text, 0.28));
+        width: fit-content;
+    }
+
+    strong {
+        font-size: $font-size-medium;
+        font-weight: $font-weight-semibold;
+    }
+}
+
+@media (max-width: 920px) {
+    .editorial-spotlight-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .editorial-spotlight-copy {
+        order: 2;
+    }
+}
+
+@media (max-width: 560px) {
+    .editorial-spotlight {
+        padding: 3.6rem 0.75rem 2.8rem;
+    }
+
+    .editorial-spotlight-actions {
+        a {
+            width: 100%;
+        }
+    }
+
+    .editorial-spotlight-badge {
+        right: 0.75rem;
+        left: 0.75rem;
+        bottom: 0.75rem;
+    }
+}

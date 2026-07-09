@@ -140,6 +140,55 @@ export async function getProducts() {
     return serializePrisma(products);
 }
 
+export async function getHomeProductSections() {
+    const [bestSellers, newArrivals] = await Promise.all([
+        prisma.product.findMany({
+            where: {
+                active: true,
+                featured: true,
+            },
+            include: PRODUCT_LIST_INCLUDE,
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: 4,
+        }),
+        prisma.product.findMany({
+            where: {
+                active: true,
+            },
+            include: PRODUCT_LIST_INCLUDE,
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: 4,
+        }),
+    ]);
+
+    return {
+        bestSellers: serializePrisma(bestSellers) as ProductWithRelations[],
+        newArrivals: serializePrisma(newArrivals) as ProductWithRelations[],
+    };
+}
+
+export async function getActiveProductsForSitemap() {
+    const products = await prisma.product.findMany({
+        where: {
+            active: true,
+        },
+        select: {
+            slug: true,
+            updatedAt: true,
+            featured: true,
+        },
+        orderBy: {
+            updatedAt: 'desc',
+        },
+    });
+
+    return serializePrisma(products);
+}
+
 export async function getProductById(productId: string) {
     const product = await prisma.product.findUnique({
         where: {

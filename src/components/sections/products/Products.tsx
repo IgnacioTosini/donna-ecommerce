@@ -12,9 +12,10 @@ interface Props {
     span: string;
     title: string;
     products: ProductWithRelations[];
+    variant?: 'default' | 'editorial';
 }
 
-export const Products = ({ span, title, products }: Props) => {
+export const Products = ({ span, title, products, variant = 'default' }: Props) => {
     const sectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -28,11 +29,11 @@ export const Products = ({ span, title, products }: Props) => {
     }, []);
 
     return (
-        <div ref={sectionRef} className="products-section">
+        <div ref={sectionRef} className={`products-section products-section--${variant}`}>
             <div className="products-wrapper">
                 <Title title={span} subTitle={title} />
 
-                <ProductsGrid products={products} />
+                <ProductsGrid products={products} featuredIndexes={variant === 'editorial' ? [0] : []} />
             </div>
         </div>
     )

@@ -1,14 +1,12 @@
 import { Dashboard } from "@/components/admin/dashboard/Dashboard";
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next"
-import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {
   title: {
     default: "Panel de administración",
-    template: "%s | Admin Donna",
+    template: "%s | Admin Tienda Demo",
   },
-  description: "Panel de administración de Donna",
+  description: "Panel de administración de Tienda Demo",
 
   robots: {
     index: false,
@@ -27,7 +25,6 @@ export default function AdminLayout({
     <main className="admin-layout">
       <Dashboard />
       {children}
-      <Analytics />
     </main>
   );
 }

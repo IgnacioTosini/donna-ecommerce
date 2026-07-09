@@ -37,6 +37,7 @@
                 text-align: left;
                 max-width: 650px;
                 padding: 2.5rem;
+                border-radius: 16px;
             }
 
             .about-us-description {
@@ -49,7 +50,7 @@
                     font-size: $font-size-xlarge;
                     font-weight: $font-weight-regular;
                     margin-bottom: 1rem;
-                    line-height: 36px;
+                    line-height: 1.2;
                 }
 
                 .about-us-text {
@@ -57,7 +58,7 @@
                     font-size: $font-size-medium;
                     margin-bottom: 2rem;
                     color: rgba($color-text-tertiary, 0.6);
-                    line-height: 26px;
+                    line-height: 1.6;
                 }
 
                 .about-us-button {
@@ -88,6 +89,10 @@
                             transform: translateX(5px);
                         }
                     }
+
+                    &:focus-visible {
+                        @include focus-ring;
+                    }
                 }
             }
 
@@ -102,13 +107,13 @@
                     font-family: $font-family-display;
                     font-size: $font-size-xlarge;
                     font-weight: $font-weight-regular;
-                    line-height: 36px;
+                    line-height: 1.2;
                 }
 
                 .about-us-text {
                     font-family: $font-family;
                     font-size: $font-size-medium;
-                    line-height: 26px;
+                    line-height: 1.6;
                 }
 
                 .about-us-location,
@@ -164,6 +169,28 @@
                             color: $color-text-tertiary;
                         }
                     }
+
+                    &:focus-visible {
+                        @include focus-ring;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .about-us-section {
+        padding: 3rem 1rem;
+
+        .about-us-container {
+            .about-us-content {
+                gap: 1rem;
+
+                .about-us-description,
+                .about-us-visit {
+                    padding: 1.4rem;
+                    border-radius: 12px;
                 }
             }
         }

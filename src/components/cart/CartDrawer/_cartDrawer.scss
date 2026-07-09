@@ -3,7 +3,7 @@
 .cart-drawer {
     position: fixed;
     inset: 0;
-    z-index: 2000;
+    z-index: $z-index-drawer;
     pointer-events: none;
 
     &.is-open {
@@ -68,6 +68,10 @@
     background: transparent;
     color: $secondary-color;
     cursor: pointer;
+
+    &:focus-visible {
+        @include focus-ring;
+    }
 }
 
 .cart-drawer-close {
@@ -172,8 +176,8 @@
 
 .cart-drawer-quantity {
     display: grid;
-    grid-template-columns: 28px 30px 28px;
-    height: 20px;
+    grid-template-columns: 32px 40px 32px;
+    height: 28px;
     border: 1px solid $tertiary-color;
 
     button,
@@ -189,6 +193,10 @@
 
     button {
         cursor: pointer;
+
+        &:focus-visible {
+            @include focus-ring;
+        }
     }
 }
 
@@ -239,5 +247,23 @@
     &:disabled {
         cursor: not-allowed;
         opacity: 0.45;
+    }
+
+    &:focus-visible {
+        @include focus-ring;
+    }
+}
+
+@media (max-width: 420px) {
+    .cart-drawer-panel {
+        width: 100%;
+    }
+
+    .cart-drawer-content {
+        padding: 0.95rem 0.85rem;
+    }
+
+    .cart-drawer-footer {
+        padding: 1rem 0.85rem;
     }
 }

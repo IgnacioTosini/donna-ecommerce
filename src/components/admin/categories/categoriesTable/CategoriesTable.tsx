@@ -17,6 +17,9 @@ interface Props {
 
 type CategorySortKey = 'name' | 'slug' | 'description' | 'products';
 
+const getCategoryProductsCount = (category: Category) =>
+    category.productsCount ?? category.products?.length ?? 0;
+
 const SortableHeader = ({
     label,
     direction,
@@ -58,7 +61,7 @@ export const CategoriesTable = ({ categories }: Props) => {
             { key: 'name', accessor: (category) => category.name },
             { key: 'slug', accessor: (category) => category.slug },
             { key: 'description', accessor: (category) => category.description ?? '' },
-            { key: 'products', accessor: (category) => category.products.length, defaultDirection: 'desc' },
+            { key: 'products', accessor: getCategoryProductsCount, defaultDirection: 'desc' },
         ],
     });
 
@@ -88,6 +91,7 @@ export const CategoriesTable = ({ categories }: Props) => {
                 <tbody className="categories-table-body">
                     {sortedCategories.map((category) => {
                         const imageUrl = category.imageUrl || '/logo.jpg';
+                        const productsCount = getCategoryProductsCount(category);
 
                         return (
                             <tr key={category.id} className="categories-table-row">
@@ -120,7 +124,7 @@ export const CategoriesTable = ({ categories }: Props) => {
                                 <td className="categories-table-cell" data-label="Slug">/{category.slug}</td>
                                 <td className="categories-table-cell" data-label="Descripción">{category.description || '-'}</td>
                                 <td className="categories-table-cell" data-label="Productos">
-                                    <span className="categories-products-badge">{category.products.length}</span>
+                                    <span className="categories-products-badge">{productsCount}</span>
                                 </td>
                                 <td className="categories-table-cell" data-label="Acciones">
                                     <div className="categories-table-actions">

@@ -167,7 +167,7 @@ export default function Navbar({ isAdmin }: Props) {
                 />
             )}
             <Link href="/" className="navbarBrand" onClick={handleBrandClick}>
-                <h1 className="navbarBrandText">DONNA</h1>
+                <h1 className="navbarBrandText">Tienda Demo</h1>
             </Link>
             <NavbarActions
                 pathname={pathname}

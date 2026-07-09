@@ -4,25 +4,24 @@ import { CartDrawer } from "@/components/cart/CartDrawer/CartDrawer";
 import { isAdminAuthenticated } from "@/lib/admin-session";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {
   title: "Tienda online",
   description:
-    "Comprá indumentaria seleccionada en Donna. Encontrá novedades, bestsellers y colecciones para mujer y hombre.",
+    "Comprá indumentaria seleccionada en una tienda demo. Encontrá novedades, bestsellers y colecciones para mujer y hombre.",
 
   openGraph: {
-    title: "Donna | Tienda online",
+    title: "Tienda Demo | Tienda online",
     description:
-      "Comprá indumentaria seleccionada en Donna. Encontrá novedades, bestsellers y colecciones para mujer y hombre.",
+      "Comprá indumentaria seleccionada en una tienda demo. Encontrá novedades, bestsellers y colecciones para mujer y hombre.",
     url: "/",
-    siteName: "Donna",
+    siteName: "Tienda Demo",
     images: [
       {
         url: "/heroImage.jpg",
         width: 1200,
         height: 630,
-        alt: "Donna",
+        alt: "Tienda Demo",
       },
     ],
     type: "website",
@@ -30,9 +29,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Donna | Tienda online",
+    title: "Tienda Demo | Tienda online",
     description:
-      "Comprá indumentaria seleccionada en Donna. Encontrá novedades, bestsellers y colecciones para mujer y hombre.",
+      "Comprá indumentaria seleccionada en una tienda demo. Encontrá novedades, bestsellers y colecciones para mujer y hombre.",
     images: ["/heroImage.jpg"],
   },
 };

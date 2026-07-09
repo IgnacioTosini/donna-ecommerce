@@ -140,7 +140,7 @@ Estos exports no son hooks React escritos a mano, pero se consumen con la misma 
 
 Archivo: `src/store/cart.store.ts`
 
-Estado global del carrito, persistido en `localStorage` con la key `donna-cart`.
+Estado global del carrito, persistido en `localStorage` con la key `demo-cart`.
 
 Estado:
 

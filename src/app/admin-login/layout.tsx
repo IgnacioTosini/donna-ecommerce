@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Acceso administrador",
-    description: "Ingreso al panel de administración de Donna.",
+    description: "Ingreso al panel de administración de Tienda Demo.",
     robots: {
         index: false,
         follow: false,

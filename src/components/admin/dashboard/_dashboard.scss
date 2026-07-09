@@ -69,7 +69,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 1000;
+        z-index: $z-index-admin-sidebar;
 
         width: 280px;
         height: 100dvh;
@@ -93,7 +93,7 @@
         position: fixed;
         top: 1rem;
         right: 1rem;
-        z-index: 1100;
+        z-index: $z-index-admin-toggle;
 
         width: 44px;
         height: 44px;
@@ -121,6 +121,6 @@
         inset: 0;
         background: rgba(0, 0, 0, 0.45);
         backdrop-filter: blur(2px);
-        z-index: 999;
+        z-index: $z-index-admin-overlay;
     }
 }

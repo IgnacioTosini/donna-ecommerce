@@ -26,7 +26,7 @@ export const DashboardSection = async () => {
         <div className="dashboard-section">
             <div className="dashboard-section-header">
                 <h1 className="dashboard-section-title">Dashboard</h1>
-                <p className="dashboard-section-description">Bienvenido al panel de administración de Donna.</p>
+                <p className="dashboard-section-description">Bienvenido al panel de administración de Tienda Demo.</p>
             </div>
             <div className="dashboard-items">
                 <DashboardItem title="Productos" count={productsCount} icon={<BsBox2 className="dashboard-item-icon" />} href="/admin/productos" />

@@ -57,34 +57,38 @@ export const Categories = ({ categories }: Props) => {
                 <div className={`categories-list-scroll ${showScrollShadow ? 'has-scroll-shadow' : ''}`}>
                     <div ref={listRef} className="categories-list" onScroll={updateScrollShadow}>
                         {
-                            categories.map((category) => (
-                                <Link
-                                    key={category.id}
-                                    href={`/categoria?category=${category.slug}`}
-                                    className="category-card"
-                                >
-                                    <Image
-                                        src={category.imageUrl || '/default-category.png'}
-                                        alt={category.name}
-                                        fill
-                                        className="category-image"
-                                    />
+                            categories.map((category) => {
+                                const productsCount = category.productsCount ?? category.products?.length ?? 0;
 
-                                    <div className="category-overlay" />
+                                return (
+                                    <Link
+                                        key={category.id}
+                                        href={`/categoria?category=${category.slug}`}
+                                        className="category-card"
+                                    >
+                                        <Image
+                                            src={category.imageUrl || '/default-category.png'}
+                                            alt={category.name}
+                                            fill
+                                            className="category-image"
+                                        />
 
-                                    <div className="category-content">
-                                        <p className="category-products">
-                                            {category.products.length} {category.products.length === 1 ? 'prenda' : 'prendas'}
-                                        </p>
+                                        <div className="category-overlay" />
 
-                                        <h3 className="category-name">{category.name}</h3>
+                                        <div className="category-content">
+                                            <p className="category-products">
+                                                {productsCount} {productsCount === 1 ? 'prenda' : 'prendas'}
+                                            </p>
 
-                                        <span className={`category-link`}>
-                                            Descubrir <span>→</span>
-                                        </span>
-                                    </div>
-                                </Link>
-                            ))
+                                            <h3 className="category-name">{category.name}</h3>
+
+                                            <span className={`category-link`}>
+                                                Descubrir <span>→</span>
+                                            </span>
+                                        </div>
+                                    </Link>
+                                );
+                            })
                         }
                     </div>
                 </div>

@@ -10,6 +10,27 @@
     }
 
     @media (max-width: 640px) {
-        padding: 3rem 0;
+        padding: 2.6rem 0;
+    }
+}
+
+.products-section--editorial {
+    background:
+        radial-gradient(circle at 16% 12%, rgba($color-hover-primary, 0.12), rgba($primary-color, 0) 45%),
+        $surface-background;
+
+    .products-wrapper {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    @media (max-width: 640px) {
+        padding-top: 3.25rem;
+        padding-bottom: 2.6rem;
+
+        .products-wrapper {
+            padding-top: 0.35rem;
+            padding-bottom: 0.15rem;
+        }
     }
 }

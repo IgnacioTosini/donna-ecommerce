@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { serializePrisma } from '@/lib/serializePrisma';
 import { CreateCategoryDto } from '@/schemas';
 import { revalidatePath } from 'next/cache';
+import type { Prisma } from '@prisma/client';
 
 const CATEGORY_REVALIDATION_PATHS = [
     '/admin/categorias',
@@ -21,6 +22,22 @@ type UploadedImage = {
     url: string;
     publicId: string;
 };
+
+const CATEGORY_WITH_PRODUCT_COUNT_SELECT = {
+    id: true,
+    name: true,
+    slug: true,
+    description: true,
+    imageUrl: true,
+    publicId: true,
+    createdAt: true,
+    updatedAt: true,
+    _count: {
+        select: {
+            products: true,
+        },
+    },
+} satisfies Prisma.CategorySelect;
 
 export async function createCategoryWithImage({
     data,
@@ -198,6 +215,23 @@ export async function getCategories() {
         });
 
     return serializePrisma(categories);
+}
+
+export async function getCategoriesWithProductCount() {
+    const categories =
+        await prisma.category.findMany({
+            orderBy: {
+                name: 'asc',
+            },
+            select: CATEGORY_WITH_PRODUCT_COUNT_SELECT,
+        });
+
+    return serializePrisma(
+        categories.map(({ _count, ...category }) => ({
+            ...category,
+            productsCount: _count.products,
+        }))
+    );
 }
 
 export async function getCategoryById(

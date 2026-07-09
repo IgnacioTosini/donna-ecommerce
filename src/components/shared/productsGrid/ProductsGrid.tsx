@@ -15,6 +15,7 @@ import './_productsGrid.scss';
 
 interface Props {
     products: ProductWithRelations[];
+    featuredIndexes?: number[];
     pagination?: {
         currentPage: number;
         totalPages: number;
@@ -33,7 +34,7 @@ interface Props {
     };
 }
 
-export const ProductsGrid = ({ products, pagination, filters = {} }: Props) => {
+export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filters = {} }: Props) => {
     const gridRef = useRef<HTMLDivElement>(null);
     const addItem = useCartStore((state) => state.addItem);
     const genderLabels = {
@@ -148,15 +149,16 @@ export const ProductsGrid = ({ products, pagination, filters = {} }: Props) => {
     return (
         <div className="products-grid-container">
             <div ref={gridRef} className="products-grid">
-                {products.map((product) => {
+                {products.map((product, index) => {
                     const primaryImage = product.images[0];
                     const hoverImage = product.images[1] ?? primaryImage;
                     const label = product.gender ? genderLabels[product.gender] : product.category.name.toUpperCase();
                     const discountPercentage = getDiscountPercentage(product.price, product.compareAtPrice);
                     const hasStock = Boolean(getCartSelection(product));
+                    const isEditorial = featuredIndexes.includes(index);
 
                     return (
-                        <article key={product.id} className="product-card">
+                        <article key={product.id} className={`product-card${isEditorial ? ' is-editorial' : ''}`}>
                             <div className="product-image-wrapper">
                                 {discountPercentage && (
                                     <span className="product-discount">-{discountPercentage}%</span>

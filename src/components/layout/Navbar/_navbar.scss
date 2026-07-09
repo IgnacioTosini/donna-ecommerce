@@ -11,9 +11,11 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 3rem;
-    background: $primary-color;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    background: rgba($primary-color, 0.9);
+    border-bottom: 1px solid rgba($border-color, 0.22);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    z-index: $z-index-navbar;
 
     .navbarBrand {
         text-decoration: none;
@@ -23,7 +25,7 @@
             font-size: $font-size-xlarge;
             font-weight: $font-weight-medium;
             color: $color-text-tertiary;
-            letter-spacing: 0.3em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
         }
     }
@@ -53,6 +55,10 @@
                 color: $color-text-quaternary;
             }
 
+            &:focus-visible {
+                @include focus-ring;
+            }
+
             &:hover::after,
             &.active::after {
                 transform: scaleX(1);
@@ -77,6 +83,10 @@
                 color: $color-text-quaternary;
             }
 
+            &:focus-visible {
+                @include focus-ring;
+            }
+
             &.active {
                 color: $color-text-quaternary;
             }
@@ -99,6 +109,10 @@
             background: transparent;
             padding: 0;
             cursor: pointer;
+
+            &:focus-visible {
+                @include focus-ring;
+            }
         }
     }
 
@@ -110,6 +124,10 @@
         background: transparent;
         color: $color-text-tertiary;
         cursor: pointer;
+
+        &:focus-visible {
+            @include focus-ring;
+        }
     }
 
     .navbarSearchPanel {
@@ -144,6 +162,10 @@
             border-color: $color-text-quaternary;
             box-shadow: 0 0 0 3px rgba(212, 167, 103, 0.22);
         }
+
+        &:focus-visible {
+            @include focus-ring;
+        }
     }
 
     .navbarSearchResults {
@@ -177,6 +199,10 @@
         &:hover {
             background: $tertiary-color;
             color: $color-text-quaternary;
+        }
+
+        &:focus-visible {
+            @include focus-ring;
         }
     }
 
@@ -246,7 +272,7 @@
         .navbarBrand {
             .navbarBrandText {
                 font-size: $font-size-large;
-                letter-spacing: 0.22em;
+                letter-spacing: 0.14em;
             }
         }
 
@@ -270,6 +296,27 @@
 
         .navbarSearchName {
             white-space: normal;
+        }
+    }
+}
+
+@media (max-width: 420px) {
+    .navbar {
+        padding: 0.9rem 0.75rem;
+
+        .navbarBrand {
+            .navbarBrandText {
+                font-size: $font-size-medium-large;
+                letter-spacing: 0.1em;
+            }
+        }
+
+        .navbarSearchPanel {
+            padding: 0.75rem 0.75rem 0.9rem;
+        }
+
+        .navbarSearchResults {
+            max-height: min(330px, calc(100vh - 140px));
         }
     }
 }

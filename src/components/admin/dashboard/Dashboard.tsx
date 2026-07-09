@@ -26,7 +26,7 @@ export const Dashboard = () => {
             </button>
             <div className={`dashboard ${isOpen ? 'open' : ''}`}>
                 <div className="dashboard-header">
-                    <h1 className="dashboard-title">Donna</h1>
+                    <h1 className="dashboard-title">Tienda Demo</h1>
                     <p className="dashboard-subtitle">Panel de administración</p>
                 </div>
 

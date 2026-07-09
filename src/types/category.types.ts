@@ -6,7 +6,8 @@ export interface Category {
     slug: string;
     description?: string | null;
 
-    products: Product[];
+    products?: Product[];
+    productsCount?: number;
 
     imageUrl?: string | null;
     publicId?: string | null;
