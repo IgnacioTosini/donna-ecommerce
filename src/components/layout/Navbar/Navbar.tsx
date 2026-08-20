@@ -14,17 +14,14 @@ import { NavbarSearch } from "./NavbarSearch";
 import { useNavbarSearch } from "./useNavbarSearch";
 import "./_navbar.scss";
 
-interface Props {
-    isAdmin: boolean;
-}
-
-export default function Navbar({ isAdmin }: Props) {
+export default function Navbar() {
     const pathname = usePathname()
     const navbarRef = useRef<HTMLElement>(null)
     const iconRef = useRef<HTMLSpanElement>(null)
     const [isMobile, setIsMobile] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
     const [activeSection, setActiveSection] = useState<string>('')
     const currentSection = pathname === '/' ? activeSection : '';
     const totalItems = useCartStore((state) => state.totalItems);
@@ -39,6 +36,22 @@ export default function Navbar({ isAdmin }: Props) {
         handleSearchQueryChange,
         resetSearch,
     } = useNavbarSearch(isSearchOpen)
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        void fetch('/api/admin/session', {
+            cache: 'no-store',
+            signal: controller.signal,
+        })
+            .then((response) => response.ok ? response.json() : null)
+            .then((data: { authenticated?: boolean } | null) => {
+                setIsAdmin(Boolean(data?.authenticated));
+            })
+            .catch(() => undefined);
+
+        return () => controller.abort();
+    }, []);
 
     useEffect(() => {
         if (!navbarRef.current) return;

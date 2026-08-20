@@ -18,7 +18,7 @@ export const useNavbarSearch = (isSearchOpen: boolean) => {
     }, [isSearchOpen])
 
     useEffect(() => {
-        if (!isSearchOpen || !trimmedSearchQuery) return
+        if (!isSearchOpen || trimmedSearchQuery.length < 2) return
 
         const controller = new AbortController()
         const timeoutId = window.setTimeout(async () => {
@@ -46,7 +46,7 @@ export const useNavbarSearch = (isSearchOpen: boolean) => {
                     setIsSearching(false)
                 }
             }
-        }, 250)
+        }, 500)
 
         return () => {
             controller.abort()
@@ -65,7 +65,7 @@ export const useNavbarSearch = (isSearchOpen: boolean) => {
         setSearchQuery(value)
         setSearchResults([])
         setSearchError('')
-        setIsSearching(Boolean(value.trim()))
+        setIsSearching(value.trim().length >= 2)
     }
 
     return {

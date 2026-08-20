@@ -1,10 +1,12 @@
 'use server';
 
 import { deleteCloudinaryImage } from '@/lib/cloudinary';
+import { isAdminAuthenticated } from '@/lib/admin-session';
+import { STOREFRONT_CACHE_SECONDS, STOREFRONT_CACHE_TAG } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
 import { serializePrisma } from '@/lib/serializePrisma';
 import { CreateCategoryDto } from '@/schemas';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache, updateTag } from 'next/cache';
 import type { Prisma } from '@prisma/client';
 
 const CATEGORY_REVALIDATION_PATHS = [
@@ -15,6 +17,7 @@ const CATEGORY_REVALIDATION_PATHS = [
 ];
 
 function revalidateCategoryPaths() {
+    updateTag(STOREFRONT_CACHE_TAG);
     CATEGORY_REVALIDATION_PATHS.forEach((path) => revalidatePath(path));
 }
 
@@ -46,6 +49,10 @@ export async function createCategoryWithImage({
     data: CreateCategoryDto;
     image?: UploadedImage;
 }) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         const category = await prisma.category.create({
             data: {
@@ -79,6 +86,10 @@ export async function updateCategoryWithImage(
     data: CreateCategoryDto,
     image?: UploadedImage
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             const currentCategory =
@@ -144,6 +155,10 @@ export async function updateCategoryWithImage(
 export async function deleteCategoryWithImage(
     categoryId: string
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             const category =
@@ -204,6 +219,10 @@ export async function deleteCategoryWithImage(
 }
 
 export async function getCategories() {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const categories =
         await prisma.category.findMany({
             orderBy: {
@@ -218,25 +237,39 @@ export async function getCategories() {
 }
 
 export async function getCategoriesWithProductCount() {
-    const categories =
-        await prisma.category.findMany({
+    return getCategoriesWithProductCountCached();
+}
+
+const getCategoriesWithProductCountCached = unstable_cache(
+    async () => {
+        const categories = await prisma.category.findMany({
             orderBy: {
                 name: 'asc',
             },
             select: CATEGORY_WITH_PRODUCT_COUNT_SELECT,
         });
 
-    return serializePrisma(
-        categories.map(({ _count, ...category }) => ({
-            ...category,
-            productsCount: _count.products,
-        }))
-    );
-}
+        return serializePrisma(
+            categories.map(({ _count, ...category }) => ({
+                ...category,
+                productsCount: _count.products,
+            }))
+        );
+    },
+    ['categories-with-product-count'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);
 
 export async function getCategoryById(
     categoryId: string
 ) {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const category =
         await prisma.category.findUnique({
             where: {

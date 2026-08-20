@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { OrderStatus, OrderWithItems } from "@/types";
+import { OrderStatus } from "@/types";
 import "./_dashboardRecentOrders.scss";
 
 type Props = {
-    orders: OrderWithItems[];
+    orders: Array<{
+        id: string;
+        customerName: string;
+        total: number;
+        status: OrderStatus;
+    }>;
 };
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -22,15 +27,13 @@ const formatCurrency = (value: number) =>
     }).format(value);
 
 export const DashboardRecentOrders = ({ orders }: Props) => {
-    const recentOrders = orders.slice(0, 4);
-
     return (
         <section className="dashboard-recent-orders">
             <h2>Pedidos recientes</h2>
 
-            {recentOrders.length > 0 ? (
+            {orders.length > 0 ? (
                 <ul>
-                    {recentOrders.map((order) => (
+                    {orders.map((order) => (
                         <li key={order.id}>
                             <div className="dashboard-recent-order-info">
                                 <Link href="/admin/pedidos">ORD-{order.id.slice(0, 4).toUpperCase()}</Link>

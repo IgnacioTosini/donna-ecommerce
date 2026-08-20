@@ -1,6 +1,7 @@
 'use client';
 
-import { Category, ProductWithRelations } from "@/types";
+import { Category, ProductListItem } from "@/types";
+import type { ProductFilterOptions } from "@/app/actions/product.action";
 import { CategoryHeader } from "@/components/ui/categoryPage/categoryHeader/CategoryHeader";
 import { CategoryFilterSidebar } from "@/components/ui/categoryPage/categoryFilterSidebar/CategoryFilterSidebar";
 import { ProductsGrid } from "@/components/shared/productsGrid/ProductsGrid";
@@ -24,9 +25,8 @@ type CategoryFilters = {
 
 type Props = {
     categories: Category[];
-    products: ProductWithRelations[];
-    productsForFilters: ProductWithRelations[];
-    productsForPriceRange: ProductWithRelations[];
+    products: ProductListItem[];
+    filterOptions: ProductFilterOptions;
     pagination?: {
         currentPage: number;
         totalPages: number;
@@ -45,8 +45,7 @@ const genderLabels: Record<string, string> = {
 export const CategoryPageView = ({
     categories,
     products,
-    productsForFilters,
-    productsForPriceRange,
+    filterOptions,
     pagination,
     filters,
 }: Props) => {
@@ -87,8 +86,7 @@ export const CategoryPageView = ({
             <div className="category-page-content">
                 <CategoryFilterSidebar
                     categories={categories}
-                    products={productsForFilters}
-                    priceProducts={productsForPriceRange}
+                    options={filterOptions}
                     filters={filters}
                 />
                 <ProductsGrid

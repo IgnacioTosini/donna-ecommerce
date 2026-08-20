@@ -33,3 +33,29 @@ export interface ProductWithRelations extends Product {
     images: ProductImage[];
     variants: ProductVariant[];
 }
+
+export interface ProductListItem {
+    id: string;
+    name: string;
+    slug: string;
+    price: number;
+    compareAtPrice?: number | null;
+    gender?: Gender | null;
+    category: {
+        name: string;
+    };
+    images: Array<{
+        id: string;
+        url: string;
+    }>;
+    variants: Array<{
+        id: string;
+        name?: string | null;
+        colorHex: string;
+        sizes: Array<{
+            id: string;
+            size: string;
+            stock: number;
+        }>;
+    }>;
+}

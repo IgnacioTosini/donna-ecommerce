@@ -1,5 +1,5 @@
 import { getCategoriesWithProductCount } from "@/app/actions/category.action";
-import { getFilteredProducts, getPaginatedFilteredProducts } from "@/app/actions/product.action";
+import { getCategoryFilterOptions, getPaginatedFilteredProducts } from "@/app/actions/product.action";
 import type { ProductSortOption } from "@/app/actions/product.action";
 import { CategoryPageView } from "@/components/sections/categoryPage/CategoryPageView";
 import { Gender } from "@prisma/client";
@@ -110,7 +110,7 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
         sort: parseSort(params.sort),
     };
 
-    const [categories, paginatedProducts, productsForFilters, productsForPriceRange] = await Promise.all([
+    const [categories, paginatedProducts, filterOptions] = await Promise.all([
         getCategoriesWithProductCount(),
         getPaginatedFilteredProducts({
             ...productFilters,
@@ -118,16 +118,17 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
             page,
             pageSize,
         }),
-        getFilteredProducts(filterOptionProductsFilters),
-        getFilteredProducts({}),
+        getCategoryFilterOptions({
+            ...filterOptionProductsFilters,
+            size: params.size,
+        }),
     ]);
 
     return (
         <CategoryPageView
             categories={categories}
             products={paginatedProducts.products}
-            productsForFilters={productsForFilters}
-            productsForPriceRange={productsForPriceRange}
+            filterOptions={filterOptions}
             pagination={{
                 currentPage: paginatedProducts.currentPage,
                 totalPages: paginatedProducts.totalPages,

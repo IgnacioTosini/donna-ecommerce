@@ -1,9 +1,10 @@
-import { OrderWithItems, ProductWithRelations } from "@/types";
 import "./_dashboardSummary.scss";
 
 type Props = {
-    orders: OrderWithItems[];
-    products: ProductWithRelations[];
+    pendingOrders: number;
+    outOfStockProducts: number;
+    saleProducts: number;
+    averageTicket: number;
 };
 
 const formatCurrency = (value: number) =>
@@ -13,25 +14,12 @@ const formatCurrency = (value: number) =>
         minimumFractionDigits: 2,
     }).format(value);
 
-const getProductStock = (product: ProductWithRelations) =>
-    product.variants.reduce((productTotal, variant) => {
-        const variantTotal = variant.sizes.reduce(
-            (sizeTotal, size) => sizeTotal + size.stock,
-            0
-        );
-
-        return productTotal + variantTotal;
-    }, 0);
-
-export const DashboardSummary = ({ orders, products }: Props) => {
-    const pendingOrders = orders.filter((order) => order.status === "PENDING").length;
-    const outOfStockProducts = products.filter((product) => getProductStock(product) <= 0).length;
-    const saleProducts = products.filter(
-        (product) => product.compareAtPrice && product.compareAtPrice > product.price
-    ).length;
-    const totalRevenue = orders.reduce((total, order) => total + Number(order.total), 0);
-    const averageTicket = orders.length > 0 ? totalRevenue / orders.length : 0;
-
+export const DashboardSummary = ({
+    pendingOrders,
+    outOfStockProducts,
+    saleProducts,
+    averageTicket,
+}: Props) => {
     const items = [
         {
             label: "Pedidos pendientes",

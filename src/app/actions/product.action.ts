@@ -1,14 +1,17 @@
 'use server';
 
 import { deleteCloudinaryImage } from '@/lib/cloudinary';
+import { isAdminAuthenticated } from '@/lib/admin-session';
+import { STOREFRONT_CACHE_SECONDS, STOREFRONT_CACHE_TAG } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
 import { serializePrisma } from '@/lib/serializePrisma';
 import { CreateProductDto } from '@/schemas';
-import { ProductWithRelations } from '@/types';
+import { ProductListItem, ProductWithRelations } from '@/types';
 import { normalizeColorValue } from '@/utils/colorHelpers';
-import { normalizeSizeValue } from '@/utils/sizeHelpers';
+import { PRODUCT_SIZE_ORDER, normalizeSizeValue, sizesMatch, sortProductSizes } from '@/utils/sizeHelpers';
 import { Gender, type Prisma } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache, updateTag } from 'next/cache';
+import { cache } from 'react';
 
 const PRODUCT_REVALIDATION_PATHS = [
     '/admin/productos',
@@ -18,6 +21,7 @@ const PRODUCT_REVALIDATION_PATHS = [
 ];
 
 function revalidateProductPaths(slugs: Array<string | null | undefined> = []) {
+    updateTag(STOREFRONT_CACHE_TAG);
     PRODUCT_REVALIDATION_PATHS.forEach((path) => revalidatePath(path));
 
     Array.from(new Set(slugs.filter(Boolean))).forEach((slug) => {
@@ -51,6 +55,10 @@ export async function createProductWithImages({
     data: CreateProductDto;
     images: UploadedImage[];
 }) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         const product = await prisma.product.create({
             data: {
@@ -121,6 +129,10 @@ export async function createProductWithImages({
 }
 
 export async function getProducts() {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const products = await prisma.product.findMany({
         include: {
             category: true,
@@ -141,55 +153,18 @@ export async function getProducts() {
 }
 
 export async function getHomeProductSections() {
-    const [bestSellers, newArrivals] = await Promise.all([
-        prisma.product.findMany({
-            where: {
-                active: true,
-                featured: true,
-            },
-            include: PRODUCT_LIST_INCLUDE,
-            orderBy: {
-                createdAt: 'desc',
-            },
-            take: 4,
-        }),
-        prisma.product.findMany({
-            where: {
-                active: true,
-            },
-            include: PRODUCT_LIST_INCLUDE,
-            orderBy: {
-                createdAt: 'desc',
-            },
-            take: 4,
-        }),
-    ]);
-
-    return {
-        bestSellers: serializePrisma(bestSellers) as ProductWithRelations[],
-        newArrivals: serializePrisma(newArrivals) as ProductWithRelations[],
-    };
+    return getHomeProductSectionsCached();
 }
 
 export async function getActiveProductsForSitemap() {
-    const products = await prisma.product.findMany({
-        where: {
-            active: true,
-        },
-        select: {
-            slug: true,
-            updatedAt: true,
-            featured: true,
-        },
-        orderBy: {
-            updatedAt: 'desc',
-        },
-    });
-
-    return serializePrisma(products);
+    return getActiveProductsForSitemapCached();
 }
 
 export async function getProductById(productId: string) {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const product = await prisma.product.findUnique({
         where: {
             id: productId,
@@ -218,34 +193,14 @@ export async function getProductById(productId: string) {
 }
 
 export async function getProductBySlug(productSlug: string) {
-    const product = await prisma.product.findUnique({
-        where: {
-            slug: productSlug,
-        },
-
-        include: {
-            category: true,
-            images: {
-                orderBy: {
-                    order: 'asc',
-                },
-            },
-            variants: {
-                include: {
-                    sizes: {
-                        orderBy: {
-                            size: 'asc',
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    return serializePrisma(product);
+    return getProductBySlugForRequest(productSlug);
 }
 
 export async function deleteProductWithImages(productId: string) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             const product = await tx.product.findUnique({
@@ -302,6 +257,10 @@ export async function updateProductWithImages(
     existingImages: ExistingImage[],
     newImages: NewImage[]
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             const currentProduct = await tx.product.findUnique({
@@ -572,6 +531,10 @@ export async function updateProductWithImages(
 }
 
 export async function getProductsForTable() {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const products = await prisma.product.findMany({
         include: {
             category: {
@@ -624,7 +587,54 @@ type ProductPaginationFilters = ProductFilters & {
     pageSize?: number;
 };
 
-const PRODUCT_LIST_INCLUDE = {
+export type ProductFilterOptions = {
+    sizes: string[];
+    colors: string[];
+    minPrice: number;
+    maxPrice: number;
+};
+
+const PRODUCT_LIST_SELECT = {
+    id: true,
+    name: true,
+    slug: true,
+    price: true,
+    compareAtPrice: true,
+    gender: true,
+    category: {
+        select: {
+            name: true,
+        },
+    },
+    images: {
+        select: {
+            id: true,
+            url: true,
+        },
+        orderBy: {
+            order: 'asc',
+        },
+    },
+    variants: {
+        select: {
+            id: true,
+            name: true,
+            colorHex: true,
+            sizes: {
+                select: {
+                    id: true,
+                    size: true,
+                    stock: true,
+                },
+                orderBy: {
+                    size: 'asc',
+                },
+            },
+        },
+    },
+} satisfies Prisma.ProductSelect;
+
+const PRODUCT_DETAIL_INCLUDE = {
     category: true,
     images: {
         orderBy: {
@@ -641,6 +651,92 @@ const PRODUCT_LIST_INCLUDE = {
         },
     },
 } satisfies Prisma.ProductInclude;
+
+const getHomeProductSectionsCached = unstable_cache(
+    async () => {
+        const [bestSellers, newArrivals] = await Promise.all([
+            prisma.product.findMany({
+                where: {
+                    active: true,
+                    featured: true,
+                },
+                select: PRODUCT_LIST_SELECT,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 4,
+            }),
+            prisma.product.findMany({
+                where: {
+                    active: true,
+                },
+                select: PRODUCT_LIST_SELECT,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 4,
+            }),
+        ]);
+
+        return {
+            bestSellers: serializePrisma(bestSellers) as ProductListItem[],
+            newArrivals: serializePrisma(newArrivals) as ProductListItem[],
+        };
+    },
+    ['home-product-sections'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);
+
+const getActiveProductsForSitemapCached = unstable_cache(
+    async () => {
+        const products = await prisma.product.findMany({
+            where: {
+                active: true,
+            },
+            select: {
+                slug: true,
+                updatedAt: true,
+                featured: true,
+            },
+            orderBy: {
+                updatedAt: 'desc',
+            },
+        });
+
+        return serializePrisma(products);
+    },
+    ['active-products-sitemap'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);
+
+const getProductBySlugCached = unstable_cache(
+    async (productSlug: string) => {
+        const product = await prisma.product.findUnique({
+            where: {
+                slug: productSlug,
+                active: true,
+            },
+            include: PRODUCT_DETAIL_INCLUDE,
+        });
+
+        return serializePrisma(product);
+    },
+    ['product-by-slug'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);
+
+const getProductBySlugForRequest = cache((productSlug: string) =>
+    getProductBySlugCached(productSlug)
+);
 
 const buildFilteredProductsOrderBy = (
     sort: ProductSortOption = 'newest'
@@ -728,44 +824,119 @@ const buildFilteredProductsWhere = ({
     };
 };
 
-export async function getFilteredProducts(filters: ProductFilters) {
-    const where = buildFilteredProductsWhere(filters);
-    const orderBy = buildFilteredProductsOrderBy(filters.sort);
-    const products = await prisma.product.findMany({
-        where,
-        include: PRODUCT_LIST_INCLUDE,
-        orderBy,
-    });
+const getCategoryFilterOptionsCached = unstable_cache(
+    async (filters: ProductFilters): Promise<ProductFilterOptions> => {
+        const where = buildFilteredProductsWhere(filters);
+        const globalPriceWhere = buildFilteredProductsWhere({});
+        const activeSize = normalizeSizeValue(filters.size);
+        const [facetProducts, priceRange] = await Promise.all([
+            prisma.product.findMany({
+                where,
+                select: {
+                    variants: {
+                        select: {
+                            colorHex: true,
+                            sizes: {
+                                select: {
+                                    size: true,
+                                    stock: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            }),
+            prisma.product.aggregate({
+                where: globalPriceWhere,
+                _min: {
+                    price: true,
+                },
+                _max: {
+                    price: true,
+                },
+            }),
+        ]);
 
-    return serializePrisma(products) as ProductWithRelations[];
+        const sizes = new Set<string>(PRODUCT_SIZE_ORDER);
+        const colors = new Set<string>();
+
+        facetProducts.forEach((product) => {
+            product.variants.forEach((variant) => {
+                const hasAvailableStock = variant.sizes.some((size) =>
+                    size.stock > 0
+                    && (!activeSize || sizesMatch(size.size, activeSize))
+                );
+                const color = normalizeColorValue(variant.colorHex);
+
+                if (hasAvailableStock && color) {
+                    colors.add(color);
+                }
+
+                variant.sizes.forEach((size) => sizes.add(size.size));
+            });
+        });
+
+        return {
+            sizes: sortProductSizes([...sizes]),
+            colors: [...colors].sort(),
+            minPrice: priceRange._min.price
+                ? Math.floor(Number(priceRange._min.price))
+                : 0,
+            maxPrice: priceRange._max.price
+                ? Math.ceil(Number(priceRange._max.price))
+                : 0,
+        };
+    },
+    ['category-filter-options'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);
+
+const getPaginatedFilteredProductsCached = unstable_cache(
+    async ({
+        page = 1,
+        pageSize = 10,
+        ...filters
+    }: ProductPaginationFilters) => {
+        const where = buildFilteredProductsWhere(filters);
+        const orderBy = buildFilteredProductsOrderBy(filters.sort);
+        const safePageSize = Math.min(Math.max(Math.floor(pageSize), 1), 60);
+        const requestedPage = Math.max(Math.floor(page), 1);
+        const totalProducts = await prisma.product.count({ where });
+        const totalPages = Math.max(1, Math.ceil(totalProducts / safePageSize));
+        const currentPage = Math.min(requestedPage, totalPages);
+
+        const products = await prisma.product.findMany({
+            where,
+            select: PRODUCT_LIST_SELECT,
+            orderBy,
+            skip: (currentPage - 1) * safePageSize,
+            take: safePageSize,
+        });
+
+        return {
+            products: serializePrisma(products) as ProductListItem[],
+            totalProducts,
+            totalPages,
+            currentPage,
+            pageSize: safePageSize,
+        };
+    },
+    ['paginated-filtered-products'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);
+
+export async function getCategoryFilterOptions(filters: ProductFilters) {
+    return getCategoryFilterOptionsCached(filters);
 }
 
-export async function getPaginatedFilteredProducts({
-    page = 1,
-    pageSize = 10,
-    ...filters
-}: ProductPaginationFilters) {
-    const where = buildFilteredProductsWhere(filters);
-    const orderBy = buildFilteredProductsOrderBy(filters.sort);
-    const safePageSize = Math.min(Math.max(Math.floor(pageSize), 1), 60);
-    const requestedPage = Math.max(Math.floor(page), 1);
-    const totalProducts = await prisma.product.count({ where });
-    const totalPages = Math.max(1, Math.ceil(totalProducts / safePageSize));
-    const currentPage = Math.min(requestedPage, totalPages);
-
-    const products = await prisma.product.findMany({
-        where,
-        include: PRODUCT_LIST_INCLUDE,
-        orderBy,
-        skip: (currentPage - 1) * safePageSize,
-        take: safePageSize,
-    });
-
-    return {
-        products: serializePrisma(products) as ProductWithRelations[],
-        totalProducts,
-        totalPages,
-        currentPage,
-        pageSize: safePageSize,
-    };
+export async function getPaginatedFilteredProducts(
+    filters: ProductPaginationFilters
+) {
+    return getPaginatedFilteredProductsCached(filters);
 }

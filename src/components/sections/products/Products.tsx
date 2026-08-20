@@ -1,6 +1,6 @@
 'use client';
 
-import { ProductWithRelations } from '@/types';
+import { ProductListItem } from '@/types';
 import { Title } from '@/components/shared/Title/Title';
 import { ProductsGrid } from '@/components/shared/productsGrid/ProductsGrid';
 import { useEffect, useRef } from 'react';
@@ -11,7 +11,7 @@ import './_products.scss';
 interface Props {
     span: string;
     title: string;
-    products: ProductWithRelations[];
+    products: ProductListItem[];
     variant?: 'default' | 'editorial';
 }
 

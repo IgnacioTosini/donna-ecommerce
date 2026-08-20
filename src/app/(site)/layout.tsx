@@ -1,7 +1,6 @@
 import Footer from "@/components/layout/Footer/Footer";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import { CartDrawer } from "@/components/cart/CartDrawer/CartDrawer";
-import { isAdminAuthenticated } from "@/lib/admin-session";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -36,16 +35,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function SiteLayout({
+export default function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const isAdmin = await isAdminAuthenticated();
-
   return (
     <>
-      <Navbar isAdmin={isAdmin} />
+      <Navbar />
       {children}
       <Footer />
       <CartDrawer />

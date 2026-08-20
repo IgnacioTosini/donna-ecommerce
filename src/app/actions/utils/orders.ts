@@ -1,9 +1,11 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { STOREFRONT_CACHE_TAG } from "@/lib/cache-tags";
+import { isAdminAuthenticated } from "@/lib/admin-session";
 import { serializePrisma } from "@/lib/serializePrisma";
 import { OrderStatus, Prisma } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 
 type CreateOrderInput = {
     customerName: string;
@@ -21,6 +23,7 @@ class OrderCreationError extends Error { }
 class OrderUpdateError extends Error { }
 
 const revalidateOrderSurfaces = (slugs: string[] = []) => {
+    updateTag(STOREFRONT_CACHE_TAG);
     revalidatePath("/admin");
     revalidatePath("/admin/productos");
     revalidatePath("/admin/pedidos");
@@ -31,6 +34,89 @@ const revalidateOrderSurfaces = (slugs: string[] = []) => {
         revalidatePath(`/producto/${slug}`);
     }
 };
+
+export async function getDashboardData() {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error("No autorizado");
+    }
+
+    const [
+        ordersCount,
+        revenue,
+        pendingOrdersCount,
+        productsCount,
+        categoriesCount,
+        outOfStockProductsCount,
+        saleProductsCount,
+        recentOrders,
+    ] = await Promise.all([
+        prisma.order.count(),
+        prisma.order.aggregate({
+            _sum: {
+                total: true,
+            },
+        }),
+        prisma.order.count({
+            where: {
+                status: OrderStatus.PENDING,
+            },
+        }),
+        prisma.product.count(),
+        prisma.category.count(),
+        prisma.product.count({
+            where: {
+                variants: {
+                    none: {
+                        sizes: {
+                            some: {
+                                stock: {
+                                    gt: 0,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }),
+        prisma.product.count({
+            where: {
+                compareAtPrice: {
+                    gt: prisma.product.fields.price,
+                },
+            },
+        }),
+        prisma.order.findMany({
+            select: {
+                id: true,
+                customerName: true,
+                total: true,
+                status: true,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            take: 4,
+        }),
+    ]);
+    const totalRevenue = Number(revenue._sum.total ?? 0);
+
+    return {
+        ordersCount,
+        productsCount,
+        categoriesCount,
+        totalRevenue,
+        pendingOrdersCount,
+        outOfStockProductsCount,
+        saleProductsCount,
+        averageTicket: ordersCount > 0 ? totalRevenue / ordersCount : 0,
+        recentOrders: serializePrisma(recentOrders) as Array<{
+            id: string;
+            customerName: string;
+            total: number;
+            status: OrderStatus;
+        }>,
+    };
+}
 
 const getOrderForStockUpdate = async (
     tx: Prisma.TransactionClient,
@@ -342,6 +428,10 @@ export async function createOrderAction(
 }
 
 export async function getAllOrders() {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error("No autorizado");
+    }
+
     const orders = await prisma.order.findMany({
         include: {
             items: {
@@ -366,6 +456,10 @@ export async function getAllOrders() {
 export async function getOrderById(
     orderId: string
 ) {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error("No autorizado");
+    }
+
     const order = await prisma.order.findUnique({
         where: {
             id: orderId,
@@ -400,6 +494,10 @@ export async function updateOrderStatusByIdAction(
     orderId: string,
     status: OrderStatus
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: "No autorizado" };
+    }
+
     try {
         const order = await prisma.$transaction(async (tx) => {
             const currentOrder = await applyOrderStatusStockTransition(
@@ -464,6 +562,10 @@ export async function updateOrderAction(
         status: OrderStatus;
     }
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: "No autorizado" };
+    }
+
     const customerName = data.customerName.trim();
     const phone = data.phone.trim();
 
@@ -537,6 +639,10 @@ export async function updateOrderAction(
 export async function deleteOrderAction(
     formData: FormData
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: "No autorizado" };
+    }
+
     const orderId = formData.get("orderId") as string;
 
     try {

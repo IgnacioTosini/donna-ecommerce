@@ -1,16 +1,24 @@
 'use server';
 
 import { deleteCloudinaryImage } from '@/lib/cloudinary';
+import { isAdminAuthenticated } from '@/lib/admin-session';
+import { STOREFRONT_CACHE_SECONDS, STOREFRONT_CACHE_TAG } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
 import { serializePrisma } from '@/lib/serializePrisma';
 import { CreateBannerDto } from '@/schemas';
 import { Banner } from '@/types';
 import { BannerPlacement } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache, updateTag } from 'next/cache';
 
 type UploadedImage = {
     url: string;
     publicId: string;
+};
+
+const revalidateBannerPaths = () => {
+    updateTag(STOREFRONT_CACHE_TAG);
+    revalidatePath('/admin/banners');
+    revalidatePath('/');
 };
 
 export async function createBannerWithImage({
@@ -20,6 +28,10 @@ export async function createBannerWithImage({
     data: CreateBannerDto;
     image: UploadedImage;
 }) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         const banner = await prisma.banner.create({
             data: {
@@ -36,8 +48,7 @@ export async function createBannerWithImage({
             },
         });
 
-        revalidatePath('/admin/banners');
-        revalidatePath('/');
+        revalidateBannerPaths();
 
         return {
             ok: true,
@@ -58,6 +69,10 @@ export async function updateBannerWithImage(
     data: CreateBannerDto,
     image?: UploadedImage
 ) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             const currentBanner = await tx.banner.findUnique({
@@ -97,8 +112,7 @@ export async function updateBannerWithImage(
                 },
             });
 
-            revalidatePath('/admin/banners');
-            revalidatePath('/');
+            revalidateBannerPaths();
 
             return {
                 ok: true,
@@ -116,6 +130,10 @@ export async function updateBannerWithImage(
 }
 
 export async function deleteBannerWithImage(bannerId: string) {
+    if (!(await isAdminAuthenticated())) {
+        return { ok: false, message: 'No autorizado' };
+    }
+
     try {
         return await prisma.$transaction(async (tx) => {
             const banner = await tx.banner.findUnique({
@@ -135,8 +153,7 @@ export async function deleteBannerWithImage(bannerId: string) {
                 where: { id: bannerId },
             });
 
-            revalidatePath('/admin/banners');
-            revalidatePath('/');
+            revalidateBannerPaths();
 
             return { ok: true };
         });
@@ -151,6 +168,10 @@ export async function deleteBannerWithImage(bannerId: string) {
 }
 
 export async function getBanners(): Promise<Banner[]> {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const banners = await prisma.banner.findMany({
         orderBy: {
             order: 'asc',
@@ -161,6 +182,10 @@ export async function getBanners(): Promise<Banner[]> {
 }
 
 export async function getBannerById(bannerId: string): Promise<Banner | null> {
+    if (!(await isAdminAuthenticated())) {
+        throw new Error('No autorizado');
+    }
+
     const banner = await prisma.banner.findUnique({
         where: { id: bannerId },
     });
@@ -171,15 +196,32 @@ export async function getBannerById(bannerId: string): Promise<Banner | null> {
 export async function getBannersByPlacement(
     placement: BannerPlacement
 ): Promise<Banner[]> {
-    const banners = await prisma.banner.findMany({
-        where: {
-            placement,
-            active: true,
-        },
-        orderBy: {
-            order: 'asc',
-        },
-    });
+    const banners = await getActiveBannersCached();
 
-    return serializePrisma(banners) as Banner[];
+    return banners.filter((banner) => banner.placement === placement);
 }
+
+export async function getActiveBanners(): Promise<Banner[]> {
+    return getActiveBannersCached();
+}
+
+const getActiveBannersCached = unstable_cache(
+    async () => {
+        const banners = await prisma.banner.findMany({
+            where: {
+                active: true,
+            },
+            orderBy: [
+                { placement: 'asc' },
+                { order: 'asc' },
+            ],
+        });
+
+        return serializePrisma(banners) as Banner[];
+    },
+    ['active-banners'],
+    {
+        revalidate: STOREFRONT_CACHE_SECONDS,
+        tags: [STOREFRONT_CACHE_TAG],
+    }
+);

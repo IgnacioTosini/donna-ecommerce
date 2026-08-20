@@ -1,7 +1,10 @@
 import { cookies } from "next/headers";
+import { verifyAdminSessionToken } from "./admin-session-token";
 
 export async function isAdminAuthenticated() {
     const cookieStore = await cookies();
 
-    return cookieStore.get("admin-session")?.value === "true";
+    return verifyAdminSessionToken(
+        cookieStore.get("admin-session")?.value
+    );
 }

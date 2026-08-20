@@ -1,6 +1,7 @@
 'use client';
 
-import { Category, ProductWithRelations } from '@/types';
+import { Category } from '@/types';
+import type { ProductFilterOptions } from '@/app/actions/product.action';
 import { CategoryFilterMobileBar } from './CategoryFilterMobileBar';
 import { CategoryFilterMobileSheet } from './CategoryFilterMobileSheet';
 import { CategoryFilterSections } from './CategoryFilterSections';
@@ -12,15 +13,13 @@ import './_categoryFilterSidebar.scss';
 
 interface Props {
     categories: Category[];
-    products?: ProductWithRelations[];
-    priceProducts?: ProductWithRelations[];
+    options: ProductFilterOptions;
     filters?: CategoryFilters;
 }
 
 export const CategoryFilterSidebar = ({
     categories,
-    products,
-    priceProducts,
+    options,
     filters = {},
 }: Props) => {
     const mobileFilterSheet = useMobileFilterSheet();
@@ -48,8 +47,7 @@ export const CategoryFilterSidebar = ({
         return queryString ? `/categoria?${queryString}` : '/categoria';
     };
     const filterOptions = useCategoryFilterOptions({
-        products,
-        priceProducts,
+        options,
         filters,
     });
     const activeFilterChips = buildCategoryFilterChips({

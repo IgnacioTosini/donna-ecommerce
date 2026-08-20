@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductWithRelations } from '@/types';
+import { ProductListItem } from '@/types';
 import Image from 'next/image';
 import { IoBagHandleOutline } from 'react-icons/io5';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
@@ -14,7 +14,7 @@ import { normalizeSizeValue, sizesMatch } from '@/utils/sizeHelpers';
 import './_productsGrid.scss';
 
 interface Props {
-    products: ProductWithRelations[];
+    products: ProductListItem[];
     featuredIndexes?: number[];
     pagination?: {
         currentPage: number;
@@ -49,7 +49,7 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
         return Math.round(((compareAtPrice - price) / compareAtPrice) * 100);
     }
 
-    const getCartSelection = (product: ProductWithRelations) => {
+    const getCartSelection = (product: ProductListItem) => {
         const selectedColor = normalizeColorValue(filters.color);
         const selectedSize = normalizeSizeValue(filters.size);
 
@@ -82,7 +82,7 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
         return null;
     };
 
-    const handleAddToCart = (product: ProductWithRelations) => {
+    const handleAddToCart = (product: ProductListItem) => {
         const selection = getCartSelection(product);
 
         if (!selection) return;

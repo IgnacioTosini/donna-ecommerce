@@ -1,5 +1,5 @@
 import { BannerPlacement } from "@prisma/client";
-import { getBannersByPlacement } from "../actions/banner.action";
+import { getActiveBanners } from "../actions/banner.action";
 import { BannerSection } from "@/components/sections/bannerSection/BannerSection";
 import { Categories } from "@/components/sections/categories/Categories";
 import { getCategoriesWithProductCount } from "../actions/category.action";
@@ -26,13 +26,14 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-    const [heroBanners, promoBanners, collectionBanners, categories, productSections] = await Promise.all([
-        getBannersByPlacement(BannerPlacement.HERO),
-        getBannersByPlacement(BannerPlacement.PROMO),
-        getBannersByPlacement(BannerPlacement.COLLECTION),
+    const [banners, categories, productSections] = await Promise.all([
+        getActiveBanners(),
         getCategoriesWithProductCount(),
         getHomeProductSections(),
     ]);
+    const heroBanners = banners.filter((banner) => banner.placement === BannerPlacement.HERO);
+    const promoBanners = banners.filter((banner) => banner.placement === BannerPlacement.PROMO);
+    const collectionBanners = banners.filter((banner) => banner.placement === BannerPlacement.COLLECTION);
 
     return (
         <main>
