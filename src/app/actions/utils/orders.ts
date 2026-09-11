@@ -1,11 +1,13 @@
 "use server";
 
+import { getStockTransition } from "@/lib/order-stock-policy";
 import { prisma } from "@/lib/prisma";
 import { STOREFRONT_CACHE_TAG } from "@/lib/cache-tags";
 import { isAdminAuthenticated } from "@/lib/admin-session";
 import { serializePrisma } from "@/lib/serializePrisma";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { revalidatePath, updateTag } from "next/cache";
+import { z } from 'zod';
 
 type CreateOrderInput = {
     customerName: string;
@@ -52,6 +54,8 @@ export async function getDashboardData() {
     ] = await Promise.all([
         prisma.order.count(),
         prisma.order.aggregate({
+            where: { status: { in: [OrderStatus.CONFIRMED, OrderStatus.SHIPPED, OrderStatus.DELIVERED] } },
+            _count: true,
             _sum: {
                 total: true,
             },
@@ -108,7 +112,7 @@ export async function getDashboardData() {
         pendingOrdersCount,
         outOfStockProductsCount,
         saleProductsCount,
-        averageTicket: ordersCount > 0 ? totalRevenue / ordersCount : 0,
+        averageTicket: revenue._count > 0 ? totalRevenue / revenue._count : 0,
         recentOrders: serializePrisma(recentOrders) as Array<{
             id: string;
             customerName: string;
@@ -122,6 +126,7 @@ const getOrderForStockUpdate = async (
     tx: Prisma.TransactionClient,
     orderId: string
 ) => {
+    await tx.$queryRaw`SELECT "id" FROM "Order" WHERE "id" = ${orderId} FOR UPDATE`;
     const order = await tx.order.findUnique({
         where: {
             id: orderId,
@@ -151,7 +156,7 @@ const restoreOrderStock = async (
     tx: Prisma.TransactionClient,
     order: Awaited<ReturnType<typeof getOrderForStockUpdate>>
 ) => {
-    for (const item of order.items) {
+    for (const item of [...order.items].sort((a, b) => (a.productSizeStockId ?? '').localeCompare(b.productSizeStockId ?? ''))) {
         if (!item.productSizeStockId) continue;
 
         await tx.productSizeStock.update({
@@ -171,10 +176,10 @@ const reserveOrderStock = async (
     tx: Prisma.TransactionClient,
     order: Awaited<ReturnType<typeof getOrderForStockUpdate>>
 ) => {
-    for (const item of order.items) {
+    for (const item of [...order.items].sort((a, b) => (a.productSizeStockId ?? '').localeCompare(b.productSizeStockId ?? ''))) {
         if (!item.productSizeStockId) {
             throw new OrderUpdateError(
-                `No se puede reactivar ${item.variant.product.name}: falta el talle asociado.`
+                `No se puede confirmar ${item.variant.product.name}: falta el talle asociado.`
             );
         }
 
@@ -210,7 +215,7 @@ const reserveOrderStock = async (
             });
 
             throw new OrderUpdateError(
-                `No se puede reactivar ${item.variant.product.name}. Stock disponible: ${latestSizeStock?.stock ?? 0}.`
+                `No se puede confirmar ${item.variant.product.name}. Stock disponible: ${latestSizeStock?.stock ?? 0}.`
             );
         }
     }
@@ -223,13 +228,12 @@ const applyOrderStatusStockTransition = async (
 ) => {
     const order = await getOrderForStockUpdate(tx, orderId);
 
-    if (order.status !== OrderStatus.CANCELLED && nextStatus === OrderStatus.CANCELLED) {
-        await restoreOrderStock(tx, order);
-    }
-
-    if (order.status === OrderStatus.CANCELLED && nextStatus !== OrderStatus.CANCELLED) {
-        await reserveOrderStock(tx, order);
-    }
+    let transition;
+    try { transition = getStockTransition(order.status, nextStatus, order.stockDeducted); }
+    catch (error) { throw new OrderUpdateError(error instanceof Error ? error.message : 'Estado inválido'); }
+    if (transition.restore) await restoreOrderStock(tx, order);
+    if (transition.reserve) await reserveOrderStock(tx, order);
+    await tx.order.update({ where: { id: orderId }, data: { stockDeducted: transition.stockDeducted } });
 
     return order;
 };
@@ -237,6 +241,14 @@ const applyOrderStatusStockTransition = async (
 export async function createOrderAction(
     data: CreateOrderInput
 ) {
+    const input = z.object({
+        customerName: z.string().trim().min(1).max(150),
+        phone: z.string().trim().min(5).max(40),
+        notes: z.string().max(2000).optional(),
+        items: z.array(z.object({ variantId: z.string().min(1), productSizeStockId: z.string().min(1), quantity: z.number().int().positive().max(999) })).min(1).max(100),
+    }).safeParse(data);
+    if (!input.success) return { ok: false, message: 'Revisá los datos del cliente y las cantidades del pedido.' };
+    data = input.data;
     if (data.items.length === 0) {
         return {
             ok: false,
@@ -305,56 +317,8 @@ export async function createOrderAction(
                     );
                 }
 
-                const stockUpdated =
-                    await tx.productSizeStock.updateMany({
-                        where: {
-                            id: item.productSizeStockId,
-                            variantId: item.variantId,
-                            stock: {
-                                gte: item.quantity,
-                            },
-                            variant: {
-                                is: {
-                                    product: {
-                                        is: {
-                                            active: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                        data: {
-                            stock: {
-                                decrement:
-                                    item.quantity,
-                            },
-                        },
-                    });
-
-                if (stockUpdated.count === 0) {
-                    const latestSizeStock =
-                        await tx.productSizeStock.findUnique({
-                            where: {
-                                id: item.productSizeStockId,
-                            },
-                            include: {
-                                variant: {
-                                    include: {
-                                        product: true,
-                                    },
-                                },
-                            },
-                        });
-
-                    if (!latestSizeStock?.variant.product.active) {
-                        throw new OrderCreationError(
-                            `${sizeStock.variant.product.name} ya no está disponible.`
-                        );
-                    }
-
-                    throw new OrderCreationError(
-                        `Stock insuficiente para ${sizeStock.variant.product.name}. Disponible: ${latestSizeStock.stock}.`
-                    );
+                if (sizeStock.stock < item.quantity) {
+                    throw new OrderCreationError(`Stock insuficiente para ${sizeStock.variant.product.name}. Disponible: ${sizeStock.stock}.`);
                 }
 
                 const price = Number(
@@ -402,9 +366,8 @@ export async function createOrderAction(
                 });
         });
 
-        revalidateOrderSurfaces(
-            order.items.map((item) => item.variant.product.slug)
-        );
+        revalidatePath('/admin');
+        revalidatePath('/admin/pedidos');
 
         return {
             ok: true,
@@ -649,7 +612,10 @@ export async function deleteOrderAction(
         const slugs = await prisma.$transaction(async (tx) => {
             const order = await getOrderForStockUpdate(tx, orderId);
 
-            if (order.status !== OrderStatus.CANCELLED) {
+            if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.CANCELLED) {
+                throw new OrderUpdateError("Solo se pueden eliminar pedidos pendientes o cancelados. Cancelá primero los confirmados.");
+            }
+            if (order.stockDeducted) {
                 await restoreOrderStock(tx, order);
             }
 

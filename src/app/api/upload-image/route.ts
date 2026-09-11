@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createHash } from "node:crypto";
 import { isAdminAuthenticated } from "@/lib/admin-session";
+import { isImageUploadFolder } from '@/lib/image-upload-folders';
 
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
@@ -33,6 +34,19 @@ export async function POST(req: NextRequest) {
 
     const incomingForm = await req.formData();
     const file = incomingForm.get("file");
+    const subfolder = incomingForm.get("folder");
+
+    if (subfolder !== null && !isImageUploadFolder(subfolder)) {
+        return Response.json(
+            { success: false, error: 'La sección de la imagen no es válida.' },
+            { status: 400 }
+        );
+    }
+
+    // Requests from an older open admin tab may omit the subfolder.
+    const folder = subfolder === null
+        ? CLOUDINARY_UPLOAD_FOLDER
+        : `${CLOUDINARY_UPLOAD_FOLDER.replace(/\/+$/, '')}/${subfolder}`;
 
     if (!(file instanceof File)) {
         return Response.json(
@@ -44,7 +58,7 @@ export async function POST(req: NextRequest) {
     const timestamp = Math.floor(Date.now() / 1000);
     const signature = buildSignature(
         {
-            folder: CLOUDINARY_UPLOAD_FOLDER,
+            folder,
             timestamp,
         },
         CLOUDINARY_API_SECRET
@@ -54,7 +68,7 @@ export async function POST(req: NextRequest) {
     cloudinaryForm.append("file", file);
     cloudinaryForm.append("api_key", CLOUDINARY_API_KEY);
     cloudinaryForm.append("timestamp", String(timestamp));
-    cloudinaryForm.append("folder", CLOUDINARY_UPLOAD_FOLDER);
+    cloudinaryForm.append("folder", folder);
     cloudinaryForm.append("signature", signature);
 
     const cloudinaryResponse = await fetch(

@@ -8,17 +8,11 @@ import { animateFooter } from '@/components/animations/gsap/sectionAnimations';
 import { IoLogoInstagram, IoLogoWhatsapp } from 'react-icons/io';
 import { navigationItems } from '@/utils/navigationItems';
 import { handleSectionNavigation } from '@/utils/navigationHelpers';
+import { useBusiness } from '@/components/layout/BusinessProvider';
 import './_footer.scss';
 
-const paymentMethods = [
-  { name: 'Visa' },
-  { name: 'Mastercard' },
-  { name: 'American Express' },
-  { name: 'PayPal' },
-  { name: 'Efectivo' },
-];
-
 export default function Footer() {
+  const { business: storefront } = useBusiness();
   const footerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
@@ -35,26 +29,27 @@ export default function Footer() {
   return (
     <footer ref={footerRef} className="footer">
       <div className='footerValueStrip'>
-        <p>Envios a todo el pais</p>
-        <p>3 y 6 cuotas sin interes</p>
-        <p>Cambios simples dentro de 30 dias</p>
+        <p>{storefront.shipping}</p>
+        <p>{storefront.installments}</p>
+        <p>Seguinos en @{storefront.instagramUsername}</p>
       </div>
       <div className='footerContent'>
         <div className='footerContentHeader'>
-          <h1>Tienda Demo</h1>
-          <p className='footerContentHeaderDescription'>Moda de muestra para quienes buscan una experiencia de compra simple, clara y lista para adaptar a cualquier marca.</p>
+          <h1>{storefront.name}</h1>
+          <p className='footerContentHeaderDescription'>{storefront.footerDescription}</p>
           <div className='footerContentHeaderSocialMedia'>
-            <Link href='https://www.instagram.com/example/' target='_blank' rel='noopener noreferrer'>
+            <Link href={`https://www.instagram.com/${storefront.instagramUsername}/`} target='_blank' rel='noopener noreferrer' aria-label={`Instagram de ${storefront.name}`}>
               <IoLogoInstagram size={24} />
             </Link>
-            <Link href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`} target='_blank' rel='noopener noreferrer'>
+            {storefront.whatsapp && <Link href={`https://wa.me/${storefront.whatsapp}`} target='_blank' rel='noopener noreferrer' aria-label={`WhatsApp de ${storefront.name}`}>
               <IoLogoWhatsapp size={24} />
-            </Link>
+            </Link>}
           </div>
         </div>
         <div className='footerContentNavigationColumn'>
           <h2 className='footerContentNavigationTitle'>Tienda</h2>
           <ul className='footerContentNavigation'>
+            <li><Link href="/ayuda">Cambios y entregas</Link></li>
             {
               navigationItems.map(item => (
                 <li key={item.id}>
@@ -77,19 +72,18 @@ export default function Footer() {
           </ul>
         </div>
         <div className='footerContentPaymentColumn'>
-          <h2 className='footerContentPaymentTitle'>Pago seguro:</h2>
+          <h2 className='footerContentPaymentTitle'>Nuestro local</h2>
           <ul className='footerContentPayment'>
-            {
-              paymentMethods.map(method => (
-                <li key={method.name} className='footerContentPaymentItem'>{method.name}</li>
-              ))
-            }
+            <li className='footerContentPaymentItem'>{storefront.address}</li>
+            <li className='footerContentPaymentItem'>{storefront.locality}</li>
+            <li className='footerContentPaymentItem'>{storefront.openingDays}</li>
+            <li className='footerContentPaymentItem'>{storefront.openingHours}</li>
           </ul>
         </div>
       </div>
       <div className='footerContentFooter'>
         <div className='footerContentInfo'>
-          <h4>© {new Date().getFullYear()} Tienda Demo. Todos los derechos reservados.</h4>
+          <h4>© {new Date().getFullYear()} {storefront.name}. Todos los derechos reservados.</h4>
           <p>Creado por Ignacio Tosini</p>
         </div>
       </div>

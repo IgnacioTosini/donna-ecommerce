@@ -34,6 +34,10 @@
                 opacity: 1;
             }
 
+            .product-image {
+                transform: scale(1.025);
+            }
+
             .product-cart-button {
                 opacity: 1;
                 transform: translateY(0);
@@ -45,7 +49,11 @@
             position: relative;
             aspect-ratio: 3 / 4;
             overflow: hidden;
-            background-color: $color-hover-secondary;
+            border: 1px solid rgba($border-color, 0.25);
+            border-radius: 14px;
+            background:
+                radial-gradient(circle at 18% 12%, rgba($color-hover-primary, 0.22), rgba($primary-color, 0) 58%),
+                $surface-muted;
 
             .product-discount {
                 position: absolute;
@@ -56,9 +64,21 @@
             }
         }
 
+        .product-image-link {
+            position: absolute;
+            inset: 0;
+            display: block;
+
+            &:focus-visible {
+                @include focus-ring;
+                z-index: 2;
+            }
+        }
+
         .product-image {
             object-fit: cover;
-            object-position: 50% 28%;
+            object-position: 50% 24%;
+            transform: scale(0.94);
             transition: transform 0.35s ease;
         }
 
@@ -113,7 +133,14 @@
         }
 
         .product-info {
-            padding-top: 1rem;
+            position: relative;
+            margin-top: -0.2rem;
+            padding-top: 0.85rem;
+            padding-right: 0.8rem;
+            padding-bottom: 0.2rem;
+            padding-left: 0.8rem;
+            border-radius: 0 0 12px 12px;
+            background: linear-gradient(180deg, rgba($color-hover-primary, 0.1), rgba($primary-color, 0));
             text-align: left;
             width: 100%;
             text-decoration: none;
@@ -133,7 +160,7 @@
             margin: 0 0 0.4rem;
             color: $color-text-tertiary;
             font-family: $font-family-display;
-            font-size: $font-size-normal;
+            font-size: $font-size-medium;
             font-weight: $font-weight-regular;
             line-height: 1.25;
             overflow: hidden;
@@ -144,8 +171,8 @@
         .product-prices {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
+            justify-content: flex-start;
+            gap: 0.6rem;
             width: 100%;
 
             .product-price {
@@ -168,32 +195,6 @@
             }
         }
 
-        &.is-editorial {
-            .product-image-wrapper {
-                border-radius: 14px;
-                background:
-                    radial-gradient(circle at 18% 12%, rgba($color-hover-primary, 0.22), rgba($primary-color, 0) 58%),
-                    $surface-muted;
-                border: 1px solid rgba($border-color, 0.25);
-            }
-
-            .product-image {
-                transform: scale(0.94);
-                object-position: 50% 24%;
-            }
-
-            .product-info {
-                position: relative;
-                margin-top: -0.2rem;
-                padding: 1.1rem 0.8rem 0.2rem;
-                border-radius: 0 0 12px 12px;
-                background: linear-gradient(180deg, rgba($color-hover-primary, 0.1), rgba($primary-color, 0));
-            }
-
-            .product-name {
-                font-size: $font-size-medium;
-            }
-        }
     }
 
     @media (max-width: 640px) {
@@ -209,6 +210,24 @@
     }
 }
 
+.products-pagination-wrapper {
+    width: 100%;
+    margin-top: 2.5rem;
+    padding: 1.25rem 1rem 0;
+    border-top: 1px solid $tertiary-color;
+}
+
+.products-pagination-summary {
+    margin-bottom: 1rem;
+    color: $color-text-secondary;
+    font-family: $font-family;
+    font-size: $font-size-small;
+
+    p {
+        margin: 0;
+    }
+}
+
 .products-pagination {
     display: flex;
     align-items: center;
@@ -216,8 +235,15 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     width: 100%;
-    margin-top: 2.5rem;
-    padding: 0 1rem;
+}
+
+.products-pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 36px;
+    color: $color-text-secondary;
 }
 
 .products-pagination-button {
@@ -265,6 +291,9 @@
 @media (max-width: 640px) {
     .products-pagination {
         gap: 0.35rem;
+    }
+
+    .products-pagination-wrapper {
         margin-top: 2rem;
     }
 

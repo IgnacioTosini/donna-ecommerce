@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from 'next/link';
 import { IoClose } from "react-icons/io5";
 import { CheckoutData } from "@/types/checkout.types";
 import "./_checkoutModal.scss";
@@ -90,6 +91,7 @@ export const CheckoutModal = ({
                 </header>
 
                 <form className="checkout-modal-form" onSubmit={handleSubmit}>
+                    <p>El pedido queda pendiente hasta que confirmemos disponibilidad por WhatsApp. Enviar la solicitud no reserva stock. <Link href="/ayuda" target="_blank">Ver cambios y entregas</Link>.</p>
                     <label className="checkout-modal-field">
                         <span>Nombre y apellido</span>
                         <input

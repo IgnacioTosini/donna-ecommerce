@@ -15,47 +15,47 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://donna-ecommerce.vercel.app"),
   title: {
-    default: "Tienda Demo | Indumentaria y moda online",
-    template: "%s | Tienda Demo",
+    default: "Donna | Calzado y ropa en Río Segundo",
+    template: "%s | Donna",
   },
   description:
-    "Comprá indumentaria seleccionada en una tienda demo. Descubrí novedades, favoritos de temporada y productos destacados.",
-  applicationName: "Tienda Demo",
+    "Calzado y ropa en Río Segundo, Córdoba. Descubrí la selección Donna, con envíos a todo el país y 3 y 6 cuotas sin interés.",
+  applicationName: "Donna",
   keywords: [
-    "Tienda Demo",
+    "Donna",
     "indumentaria",
     "moda online",
     "ropa de mujer",
     "ropa de hombre",
     "ecommerce de moda",
   ],
-  authors: [{ name: "Tienda Demo" }],
-  creator: "Tienda Demo",
-  publisher: "Tienda Demo",
+  authors: [{ name: "Donna" }],
+  creator: "Donna",
+  publisher: "Donna",
   openGraph: {
     type: "website",
     locale: "es_AR",
-    siteName: "Tienda Demo",
-    title: "Tienda Demo | Indumentaria y moda online",
+    siteName: "Donna",
+    title: "Donna | Calzado y ropa en Río Segundo",
     description:
-      "Descubrí novedades, favoritos de temporada y productos destacados en una tienda demo.",
+      "Descubrí calzado y ropa en Donna, Río Segundo, Córdoba. Envíos a todo el país y 3 y 6 cuotas sin interés.",
     url: "/",
     images: [
       {
         url: "/heroImage.jpg",
         width: 1200,
         height: 630,
-        alt: "Tienda Demo",
+        alt: "Donna",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tienda Demo | Indumentaria y moda online",
+    title: "Donna | Calzado y ropa en Río Segundo",
     description:
-      "Descubrí novedades, favoritos de temporada y productos destacados en una tienda demo.",
+      "Descubrí calzado y ropa en Donna, Río Segundo, Córdoba. Envíos a todo el país y 3 y 6 cuotas sin interés.",
     images: ["/heroImage.jpg"],
   },
   robots: {

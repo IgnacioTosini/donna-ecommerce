@@ -71,6 +71,7 @@ export default function CategoryForm() {
 
         try {
             uploadedImage = await image.uploadMany({
+                folder: 'categorias',
                 enableOptimization: true,
                 format: 'webp',
                 maxWidth: 800,

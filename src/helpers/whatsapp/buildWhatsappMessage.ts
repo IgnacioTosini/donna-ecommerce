@@ -7,6 +7,7 @@ type Props = {
     notes?: string;
     items: CartItem[];
     subtotal: number;
+    businessName?: string;
 };
 
 export function buildWhatsappMessage({
@@ -16,6 +17,7 @@ export function buildWhatsappMessage({
     notes,
     items,
     subtotal,
+    businessName = 'Donna',
 }: Props) {
     const products = items
         .map(
@@ -26,7 +28,7 @@ Subtotal: $${(item.price * item.quantity).toLocaleString("es-AR")}`
         )
         .join("\n\n");
 
-    return `Hola Tienda Demo.
+    return `Hola ${businessName}.
 
 Quiero confirmar el pedido #${orderId}
 

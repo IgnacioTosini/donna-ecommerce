@@ -5,7 +5,7 @@ import './_categoriasPage.scss';
 
 export const metadata: Metadata = {
     title: "Categorías",
-    description: "Administración de categorías de Tienda Demo.",
+    description: "Administración de categorías de Donna.",
 };
 
 export default async function CategoriasPage() {

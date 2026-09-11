@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getCategoriesWithProductCount } from "./actions/category.action";
 import { getActiveProductsForSitemap } from "./actions/product.action";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://donna-ecommerce.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [categories, products] = await Promise.all([
@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const staticRoutes: MetadataRoute.Sitemap = [
+        { url: `${siteUrl}/ayuda`, changeFrequency: 'monthly', priority: 0.5 },
         {
             url: siteUrl,
             lastModified: new Date(),

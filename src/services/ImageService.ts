@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { ImageUploadFolder } from '@/lib/image-upload-folders';
 
 export type CloudinaryUploadResponse = {
     success: boolean;
@@ -123,7 +124,7 @@ export class ImageService {
 
     static async uploadImage(
         file: File,
-        options: ImageOptimizationOptions = { enableOptimization: true, format: 'webp' }
+        options: ImageOptimizationOptions & { folder: ImageUploadFolder }
     ): Promise<CloudinaryUploadResponse> {
         try {
             let fileToUpload = file;
@@ -135,6 +136,7 @@ export class ImageService {
 
             const formData = new FormData();
             formData.append("file", fileToUpload);
+            formData.append("folder", options.folder);
 
             const response = await axios.post("/api/upload-image", formData);
             return response.data;

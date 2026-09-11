@@ -10,10 +10,10 @@ import { animateCardGrid, animateSectionReveal } from '@/components/animations/g
 import './_categories.scss';
 
 interface Props {
-    categories: Category[];
+    categories: Category[]; title?: string; eyebrow?: string;
 }
 
-export const Categories = ({ categories }: Props) => {
+export const Categories = ({ categories, title = 'Categorías', eyebrow = 'Explorá la colección' }: Props) => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const [showScrollShadow, setShowScrollShadow] = useState(false);
@@ -53,7 +53,7 @@ export const Categories = ({ categories }: Props) => {
     return (
         <div ref={sectionRef} className="categories-section">
             <div className="categories-wrapper">
-                <Title title='Categorías' subTitle='Explora la colección' />
+                <Title title={title} subTitle={eyebrow} />
                 <div className={`categories-list-scroll ${showScrollShadow ? 'has-scroll-shadow' : ''}`}>
                     <div ref={listRef} className="categories-list" onScroll={updateScrollShadow}>
                         {

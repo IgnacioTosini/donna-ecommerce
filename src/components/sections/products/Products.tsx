@@ -33,7 +33,7 @@ export const Products = ({ span, title, products, variant = 'default' }: Props) 
             <div className="products-wrapper">
                 <Title title={span} subTitle={title} />
 
-                <ProductsGrid products={products} featuredIndexes={variant === 'editorial' ? [0] : []} />
+                <ProductsGrid products={products} />
             </div>
         </div>
     )

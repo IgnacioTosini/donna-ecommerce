@@ -12,6 +12,8 @@ import { useSearch } from '@/hooks/useSearch';
 import { SortDirection, useSortableTable } from '@/hooks/useSortableTable';
 import './_productsTable.scss';
 import { useRouter } from 'next/navigation';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/admin/shared/Pagination';
 
 interface Props {
     products: ProductWithRelations[];
@@ -85,12 +87,13 @@ export const ProductsTable = ({ products }: Props) => {
             { key: 'stock', accessor: getTotalStock, defaultDirection: 'desc' },
         ],
     });
+    const pagination = usePagination(sortedProducts);
 
     return (
         <div className="products-table-wrapper">
             <SearchBar
                 query={query}
-                onChange={setQuery}
+                onChange={value => { setQuery(value); pagination.resetPage(); }}
                 placeholder="Buscar producto..."
             />
             <table className="products-table">
@@ -105,7 +108,7 @@ export const ProductsTable = ({ products }: Props) => {
                 </thead>
 
                 <tbody>
-                    {sortedProducts.map((product) => {
+                    {pagination.paginatedItems.map((product) => {
                         const imageUrl =
                             product.images[0]?.url ?? '/placeholder-product.jpg';
 
@@ -173,6 +176,7 @@ export const ProductsTable = ({ products }: Props) => {
                     No se encontraron productos.
                 </p>
             )}
+            <Pagination currentPage={pagination.currentPage} pageSize={pagination.pageSize} totalItems={pagination.totalItems} totalPages={pagination.totalPages} onPageChange={pagination.setCurrentPage} onPageSizeChange={pagination.setPageSize} />
         </div>
     );
 };

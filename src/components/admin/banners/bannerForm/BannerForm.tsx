@@ -79,6 +79,7 @@ export default function BannerForm() {
 
         try {
             uploadedImages = await image.uploadMany({
+                folder: 'banners',
                 enableOptimization: true,
                 format: 'webp',
                 maxWidth: 1600,

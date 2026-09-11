@@ -15,7 +15,6 @@ type SearchParams = Promise<{
     sale?: string;
     sort?: string;
     page?: string;
-    pageSize?: string;
 }>;
 
 const sortOptions: ProductSortOption[] = [
@@ -61,7 +60,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
             ? `${categoryName} destacados`
             : categoryName;
     const description = category?.description
-        ?? `Explorá productos de ${categoryName.toLowerCase()} en Tienda Demo.`;
+        ?? `Explorá productos de ${categoryName.toLowerCase()} en Donna.`;
 
     return {
         title,
@@ -70,7 +69,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
             canonical: "/categoria",
         },
         openGraph: {
-            title: `${title} | Tienda Demo`,
+            title: `${title} | Donna`,
             description,
             url: "/categoria",
             images: category?.imageUrl
@@ -91,7 +90,6 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
     const sale = parseBooleanParam(params.sale);
     const gender = parseGender(params.gender);
     const page = parsePositiveIntegerParam(params.page);
-    const pageSize = parsePositiveIntegerParam(params.pageSize, 10);
 
     const productFilters = {
         category: params.category,
@@ -116,7 +114,7 @@ export default async function CategoriaPage({ searchParams }: { searchParams: Se
             ...productFilters,
             maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
             page,
-            pageSize,
+            pageSize: 10,
         }),
         getCategoryFilterOptions({
             ...filterOptionProductsFilters,

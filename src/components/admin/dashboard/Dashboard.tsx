@@ -26,7 +26,7 @@ export const Dashboard = () => {
             </button>
             <div className={`dashboard ${isOpen ? 'open' : ''}`}>
                 <div className="dashboard-header">
-                    <h1 className="dashboard-title">Tienda Demo</h1>
+                    <h1 className="dashboard-title">Donna</h1>
                     <p className="dashboard-subtitle">Panel de administración</p>
                 </div>
 
@@ -35,6 +35,8 @@ export const Dashboard = () => {
                     <Link href="/admin/categorias" className="dashboard-link" onClick={closeMenu}><MdCategory />Categorías</Link>
                     <Link href="/admin/productos" className="dashboard-link" onClick={closeMenu}><MdProductionQuantityLimits />Productos</Link>
                     <Link href="/admin/pedidos" className="dashboard-link" onClick={closeMenu}><MdOutlineShoppingCart />Pedidos</Link>
+                    <Link href="/admin/inicio" className="dashboard-link" onClick={closeMenu}><MdOutlineDashboard />Página de inicio</Link>
+                    <Link href="/admin/negocio" className="dashboard-link" onClick={closeMenu}><IoMdAppstore />Datos del negocio</Link>
                     <Link href="/admin/banners" className="dashboard-link" onClick={closeMenu}><MdOutlineImage />Banners</Link>
                 </div>
 

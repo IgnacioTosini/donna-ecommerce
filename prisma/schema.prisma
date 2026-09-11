@@ -44,6 +44,15 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
+model SiteContent {
+  id          String   @id
+  draft       Json
+  published   Json
+  version     Int      @default(0)
+  publishedAt DateTime?
+  updatedAt   DateTime @updatedAt
+}
+
 model Product {
   id String @id @default(cuid())
 
@@ -51,6 +60,7 @@ model Product {
   slug String @unique
 
   description String?
+  sizeGuide   String?
 
   price          Decimal  @db.Decimal(10, 2)
   compareAtPrice Decimal? @db.Decimal(10, 2)
@@ -161,6 +171,7 @@ model Order {
   total Decimal @db.Decimal(10, 2)
 
   status OrderStatus @default(PENDING)
+  stockDeducted Boolean @default(false)
 
   items OrderItem[]
 

@@ -5,7 +5,7 @@ import { isAdminAuthenticated } from '@/lib/admin-session';
 import { STOREFRONT_CACHE_SECONDS, STOREFRONT_CACHE_TAG } from '@/lib/cache-tags';
 import { prisma } from '@/lib/prisma';
 import { serializePrisma } from '@/lib/serializePrisma';
-import { CreateProductDto } from '@/schemas';
+import { CreateProductDto, ProductFormSchema } from '@/schemas';
 import { ProductListItem, ProductWithRelations } from '@/types';
 import { normalizeColorValue } from '@/utils/colorHelpers';
 import { PRODUCT_SIZE_ORDER, normalizeSizeValue, sizesMatch, sortProductSizes } from '@/utils/sizeHelpers';
@@ -65,6 +65,7 @@ export async function createProductWithImages({
                 name: data.name,
                 slug: data.slug,
                 description: data.description,
+                sizeGuide: ProductFormSchema.shape.sizeGuide.parse(data.sizeGuide) || null,
 
                 price: data.price,
                 compareAtPrice: data.compareAtPrice,
@@ -312,6 +313,7 @@ export async function updateProductWithImages(
                     name: data.name,
                     slug: data.slug,
                     description: data.description,
+                sizeGuide: ProductFormSchema.shape.sizeGuide.parse(data.sizeGuide) || null,
 
                     price: data.price,
                     compareAtPrice: data.compareAtPrice,
@@ -664,7 +666,7 @@ const getHomeProductSectionsCached = unstable_cache(
                 orderBy: {
                     createdAt: 'desc',
                 },
-                take: 4,
+                take: 12,
             }),
             prisma.product.findMany({
                 where: {
@@ -674,7 +676,7 @@ const getHomeProductSectionsCached = unstable_cache(
                 orderBy: {
                     createdAt: 'desc',
                 },
-                take: 4,
+                take: 12,
             }),
         ]);
 

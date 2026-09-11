@@ -5,7 +5,7 @@ import './_bannersPage.scss';
 
 export const metadata: Metadata = {
     title: "Banners",
-    description: "Administración de banners de Tienda Demo.",
+    description: "Administración de banners de Donna.",
 };
 
 export default async function BannersPage() {

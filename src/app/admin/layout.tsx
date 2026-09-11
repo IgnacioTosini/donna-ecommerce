@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
     default: "Panel de administración",
-    template: "%s | Admin Tienda Demo",
+    template: "%s | Admin Donna",
   },
-  description: "Panel de administración de Tienda Demo",
+  description: "Panel de administración de Donna",
 
   robots: {
     index: false,

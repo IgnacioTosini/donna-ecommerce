@@ -1,7 +1,9 @@
 "use client";
 
-import { FaRegTrashAlt } from "react-icons/fa";
-import { IoEyeOutline } from "react-icons/io5";
+import { useState } from "react";
+import { matchesOrderFilters, customerWhatsappUrl } from "@/lib/order-filters";
+import { FaRegTrashAlt, FaWhatsapp } from "react-icons/fa";
+import { IoEyeOutline, IoOptionsOutline } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { deleteOrderAction } from "@/app/actions/utils/orders";
 import { SearchBar } from "@/components/shared/searchBar/SearchBar";
@@ -10,6 +12,8 @@ import { SortDirection, useSortableTable } from "@/hooks/useSortableTable";
 import { OrderStatus, OrderWithItems } from "@/types";
 import { toast } from "react-toastify";
 import "./_ordersTable.scss";
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/admin/shared/Pagination';
 
 type Props = {
     orders: OrderWithItems[];
@@ -64,6 +68,9 @@ const formatDate = (value: string) =>
 
 export const OrdersTable = ({ orders, onViewOrder }: Props) => {
     const router = useRouter();
+    const [statusFilter, setStatusFilter] = useState('');
+    const [from, setFrom] = useState('');
+    const [to, setTo] = useState('');
     const {
         query,
         setQuery,
@@ -79,6 +86,7 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
                 item.variant.product.name.toLowerCase().includes(search)
             )
     );
+    const activeFilters = [query, statusFilter, from, to].filter(Boolean).length;
 
     const handleDeleteOrder = async (order: OrderWithItems) => {
         const confirmed = window.confirm(`¿Eliminar el pedido #${order.id.slice(0, 8)}?`);
@@ -103,7 +111,7 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
         sortBy,
         getSortDirection,
     } = useSortableTable<OrderWithItems, OrderSortKey>({
-        items: filteredOrders,
+        items: filteredOrders.filter(order => matchesOrderFilters(order, statusFilter, from, to)),
         initialSort: {
             key: "date",
             direction: "desc",
@@ -117,15 +125,30 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
             { key: "date", accessor: (order) => new Date(order.createdAt), defaultDirection: "desc" },
         ],
     });
+    const pagination = usePagination(sortedOrders);
 
     return (
         <div className="orders-table-wrapper">
             <SearchBar
                 query={query}
-                onChange={setQuery}
-                placeholder="Buscar pedido..."
+                onChange={value => { setQuery(value); pagination.resetPage(); }}
+                placeholder="Buscar cliente, teléfono, número o producto..."
             />
 
+            <div className="order-filters">
+                <div className="order-filters-heading">
+                    <span className="order-filters-title"><IoOptionsOutline /> Filtros</span>
+                    {activeFilters > 0 && <span className="order-filters-active">{activeFilters} activos</span>}
+                </div>
+                <div className="order-filters-controls">
+                    <label><span>Estado</span><select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); pagination.resetPage(); }}><option value="">Todos los estados</option>{Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                    <label><span>Desde</span><input type="date" value={from} max={to || undefined} onChange={e => { setFrom(e.target.value); pagination.resetPage(); }} /></label>
+                    <label><span>Hasta</span><input type="date" value={to} min={from || undefined} onChange={e => { setTo(e.target.value); pagination.resetPage(); }} /></label>
+                    <button className="order-filters-clear" type="button" disabled={activeFilters === 0} onClick={() => { setQuery(''); setStatusFilter(''); setFrom(''); setTo(''); }}>Limpiar</button>
+                    <span className="order-filters-result" aria-live="polite"><strong>{sortedOrders.length}</strong> de {orders.length} pedidos</span>
+                </div>
+            </div>
+            {from && to && from > to && <p role="alert">La fecha inicial debe ser anterior a la fecha final.</p>}
             <table className="orders-table">
                 <thead>
                     <tr>
@@ -140,7 +163,7 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
                 </thead>
 
                 <tbody>
-                    {sortedOrders.map((order) => (
+                    {pagination.paginatedItems.map((order) => (
                         <tr key={order.id}>
                             <td data-label="Pedido">
                                 <strong>#{order.id.slice(0, 8)}</strong>
@@ -165,6 +188,7 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
                             <td data-label="Fecha">{formatDate(order.createdAt)}</td>
                             <td data-label="Acciones">
                                 <div className="order-actions">
+                                    {customerWhatsappUrl(order.phone, order.id) && <a className="order-whatsapp" href={customerWhatsappUrl(order.phone, order.id)!} target="_blank" rel="noopener noreferrer" aria-label={`Contactar a ${order.customerName} por WhatsApp`}><FaWhatsapp aria-hidden="true" /><span>WhatsApp</span></a>}
                                     <button
                                         type="button"
                                         aria-label={`Ver pedido ${order.id}`}
@@ -174,6 +198,7 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
                                     </button>
                                     <button
                                         type="button"
+                                        disabled={!(["PENDING", "CANCELLED"] as string[]).includes(order.status)}
                                         aria-label={`Eliminar pedido ${order.id}`}
                                         onClick={() => handleDeleteOrder(order)}
                                     >
@@ -189,6 +214,7 @@ export const OrdersTable = ({ orders, onViewOrder }: Props) => {
             {sortedOrders.length === 0 && (
                 <p className="orders-empty">No se encontraron pedidos.</p>
             )}
+            <Pagination currentPage={pagination.currentPage} pageSize={pagination.pageSize} totalItems={pagination.totalItems} totalPages={pagination.totalPages} onPageChange={pagination.setCurrentPage} onPageSizeChange={pagination.setPageSize} />
         </div>
     );
 };

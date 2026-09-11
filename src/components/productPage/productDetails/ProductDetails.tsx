@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { SizeGuide } from '@/components/productPage/SizeGuide';
+import Link from 'next/link';
+import { useBusiness } from '@/components/layout/BusinessProvider';
 import gsap from 'gsap';
 import { ProductWithRelations } from '@/types'
 import { ProductGallery } from '../productGallery/ProductGallery';
@@ -13,6 +16,7 @@ import { CheckoutModal } from '@/components/checkout/CheckoutModal/CheckoutModal
 import { handleWhatsappCheckout } from '@/helpers/whatsapp/handleWhatsappCheckout';
 import { CheckoutData } from '@/types/checkout.types';
 import { toast } from 'react-toastify';
+import { FiChevronRight, FiRefreshCw, FiTruck } from 'react-icons/fi';
 import { animateProductDetails } from '@/components/animations/gsap/sectionAnimations';
 import { colorsMatch, normalizeColorValue } from '@/utils/colorHelpers';
 import { sortProductSizes, sizesMatch } from '@/utils/sizeHelpers';
@@ -23,6 +27,7 @@ interface Props {
 }
 
 export const ProductDetails = ({ product }: Props) => {
+    const { business, preview } = useBusiness();
     const sectionRef = useRef<HTMLDivElement>(null);
     const addItem = useCartStore((state) => state.addItem);
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -132,10 +137,13 @@ export const ProductDetails = ({ product }: Props) => {
     };
 
     const handleCheckoutSubmit = async (data: CheckoutData) => {
+        if (preview) { toast.info('La vista previa no permite crear pedidos.'); return false; }
         if (!buyNowItem) return false;
 
         const result = await handleWhatsappCheckout({
             ...data,
+            whatsappPhone: business.whatsapp,
+            businessName: business.name,
             items: [buyNowItem],
             subtotal: buyNowItem.price * buyNowItem.quantity,
         }).catch(() => ({
@@ -189,6 +197,7 @@ export const ProductDetails = ({ product }: Props) => {
                             disabledSizes={disabledSizes}
                             onSelectSize={setSelectedSize}
                         />
+                        <SizeGuide guide={product.sizeGuide} productName={product.name} />
                         <ProductPurchaseActions
                             disabled={isAddToCartDisabled}
                             maxQuantity={availableStock}
@@ -196,6 +205,11 @@ export const ProductDetails = ({ product }: Props) => {
                             onBuyNow={handleBuyNow}
                         />
                         <div className="product-details-description-container">
+                            <Link href="/ayuda" className="product-policy-link">
+                                <span className="product-policy-icon"><FiTruck /><FiRefreshCw /></span>
+                                <span><strong>Cambios y entregas</strong><small>Consultá plazos y condiciones</small></span>
+                                <FiChevronRight />
+                            </Link>
                             <h2 className="product-details-description-title">Descripción</h2>
                             <p className="product-details-description">{product.description}</p>
                         </div>

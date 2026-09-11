@@ -7,6 +7,8 @@ import { createOrderAction } from "@/app/actions/utils/orders";
 type Props = CheckoutData & {
     items: CartItem[];
     subtotal: number;
+    whatsappPhone: string;
+    businessName: string;
 };
 
 export async function handleWhatsappCheckout({
@@ -15,14 +17,14 @@ export async function handleWhatsappCheckout({
     notes,
     items,
     subtotal,
+    whatsappPhone,
+    businessName,
 }: Props) {
-    const whatsappPhone =
-        process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
 
     if (!whatsappPhone) {
         return {
             ok: false,
-            message: "Falta configurar el número de WhatsApp.",
+            message: "Contactanos por Instagram para coordinar tu pedido.",
         };
     }
 
@@ -63,6 +65,7 @@ export async function handleWhatsappCheckout({
     const { order } = result;
 
     const message = buildWhatsappMessage({
+        businessName,
         orderId: order.id,
         customerName,
         phone,

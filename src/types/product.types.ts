@@ -11,6 +11,7 @@ export interface Product {
     slug: string;
 
     description?: string | null;
+    sizeGuide?: string | null;
 
     price: number;
     compareAtPrice?: number | null;

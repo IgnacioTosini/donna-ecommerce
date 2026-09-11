@@ -3,12 +3,15 @@
 import { Title } from '@/components/shared/Title/Title';
 import { FaArrowRight, FaInstagram, FaMapMarkerAlt } from 'react-icons/fa';
 import { CiClock2 } from 'react-icons/ci';
+import { useBusiness } from '@/components/layout/BusinessProvider';
+import type { HomeContent } from '@/lib/site-content-schema';
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { animateSectionReveal } from '@/components/animations/gsap/sectionAnimations';
 import './_aboutUs.scss';
 
-export const AboutUs = () => {
+export const AboutUs = ({ content }: { content: HomeContent['about'] }) => {
+    const { business: storefront } = useBusiness();
     const sectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -31,33 +34,33 @@ export const AboutUs = () => {
     return (
         <div ref={sectionRef} className="about-us-section">
             <div className="about-us-container">
-                <Title title='Nuestra esencia' subTitle='Conoce Tienda Demo' />
+                <Title title={content.title} subTitle={content.eyebrow} />
                 <div className="about-us-content">
                     <div className="about-us-description">
-                        <h3 className="about-us-title">Más que una tienda</h3>
-                        <p className="about-us-text">Tienda Demo es un showroom ficticio creado para mostrar una experiencia de ecommerce de indumentaria. Seleccionamos productos de muestra pensando en la versatilidad, el confort y ese detalle que marca la diferencia. Las colecciones combinan tendencias actuales con propuestas atemporales, ideales para armar looks propios.</p>
-                        <p className="about-us-text">Este contenido es de demostración e incluye nuevos drops, cuotas sin interés y envíos simulados para presentar el flujo completo de compra.</p>
-                        <button className="about-us-button" onClick={() => window.location.href = '/categoria?sort=newest'}>VER NUEVOS INGRESOS <FaArrowRight className='about-us-button-icon' /></button>
+                        <h3 className="about-us-title">{content.heading}</h3>
+                        <p className="about-us-text">{content.description}</p>
+                        <p className="about-us-text">{storefront.shipping} y {storefront.installments.toLowerCase()}. {content.secondParagraph}</p>
+                        <button className="about-us-button" onClick={() => window.location.href = content.buttonLink}>{content.buttonText} <FaArrowRight className='about-us-button-icon' /></button>
                     </div>
                     <div className="about-us-visit">
-                        <h3 className="about-us-title">Visitá Tienda Demo</h3>
-                        <p className="about-us-text">Pasá por nuestro local de muestra, probate lo nuevo y descubrí las promos del día. También podés escribirnos por Instagram o WhatsApp y te asesoramos con tu pedido.</p>
+                        <h3 className="about-us-title">{content.visitTitle}</h3>
+                        <p className="about-us-text">{content.visitText} @{storefront.instagramUsername}</p>
                         <div className="about-us-location">
                             <FaMapMarkerAlt className='about-us-location-icon' />
                             <div className="about-us-location-text">
-                                <p className='about-us-location-line'>Av. Principal 123</p>
-                                <p className='about-us-location-line'>Ciudad Demo, Argentina</p>
+                                <p className='about-us-location-line'>{storefront.address}</p>
+                                <p className='about-us-location-line'>{storefront.locality} · {storefront.postalCode}</p>
                             </div>
                         </div>
                         <div className="about-us-hours">
                             <CiClock2 className='about-us-hours-icon' />
                             <div className="about-us-hours-text">
-                                <p className='about-us-hours-line'>Lun a Sáb</p>
-                                <p className='about-us-hours-line'>9:00 a 13:00 hs | 17:00 a 21:00 hs</p>
+                                <p className='about-us-hours-line'>{storefront.openingDays}</p>
+                                <p className='about-us-hours-line'>{storefront.openingHours}</p>
                             </div>
                         </div>
-                        <a href='https://www.instagram.com/example/' target='_blank' rel='noopener noreferrer' className="about-us-button">
-                            <FaInstagram className='about-us-button-icon' />CONTACTO
+                        <a href={`https://www.instagram.com/${storefront.instagramUsername}/`} target='_blank' rel='noopener noreferrer' className="about-us-button">
+                            <FaInstagram className='about-us-button-icon' />VER INSTAGRAM
                         </a>
                     </div>
                 </div>

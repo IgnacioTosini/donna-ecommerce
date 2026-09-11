@@ -5,14 +5,17 @@ import './_productosPage.scss';
 
 export const metadata: Metadata = {
     title: "Productos",
-    description: "Administración de productos de Tienda Demo.",
+    description: "Administración de productos de Donna.",
 };
 
-export default async function ProductosPage() {
+export default async function ProductosPage({ searchParams }: {
+    searchParams: Promise<{ editar?: string }>;
+}) {
+    const { editar } = await searchParams;
     const products = await getProductsForTable();
     return (
         <div className="productos-page">
-            <ProductSection products={products} />
+            <ProductSection products={products} initialEditId={editar} />
         </div>
     );
 }

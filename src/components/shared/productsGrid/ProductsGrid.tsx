@@ -15,7 +15,6 @@ import './_productsGrid.scss';
 
 interface Props {
     products: ProductListItem[];
-    featuredIndexes?: number[];
     pagination?: {
         currentPage: number;
         totalPages: number;
@@ -34,15 +33,9 @@ interface Props {
     };
 }
 
-export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filters = {} }: Props) => {
+export const ProductsGrid = ({ products, pagination, filters = {} }: Props) => {
     const gridRef = useRef<HTMLDivElement>(null);
     const addItem = useCartStore((state) => state.addItem);
-    const genderLabels = {
-        MEN: 'HOMBRE',
-        WOMEN: 'MUJER',
-        UNISEX: 'UNISEX',
-    };
-
     const getDiscountPercentage = (price: number, compareAtPrice?: number | null) => {
         if (!compareAtPrice || compareAtPrice <= price) return null;
 
@@ -108,7 +101,18 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
 
     const totalPages = pagination?.totalPages ?? 1;
     const currentPage = pagination?.currentPage ?? 1;
-    const hasPagination = totalPages > 1;
+    const totalProducts = pagination?.totalProducts ?? products.length;
+    const pageSize = pagination?.pageSize ?? products.length;
+    const firstProduct = totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const lastProduct = Math.min(currentPage * pageSize, totalProducts);
+    const hasPagination = Boolean(pagination && totalProducts > 0);
+
+    const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1)
+        .filter((page) => (
+            page === 1
+            || page === totalPages
+            || Math.abs(page - currentPage) <= 1
+        ));
 
     const buildPaginationHref = (page: number) => {
         const params = new URLSearchParams();
@@ -122,10 +126,6 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
 
         if (page > 1) {
             params.set('page', String(page));
-        }
-
-        if (pagination?.pageSize && pagination.pageSize !== 10) {
-            params.set('pageSize', String(pagination.pageSize));
         }
 
         const queryString = params.toString();
@@ -149,39 +149,40 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
     return (
         <div className="products-grid-container">
             <div ref={gridRef} className="products-grid">
-                {products.map((product, index) => {
+                {products.map((product) => {
                     const primaryImage = product.images[0];
                     const hoverImage = product.images[1] ?? primaryImage;
-                    const label = product.gender ? genderLabels[product.gender] : product.category.name.toUpperCase();
+                    const label = product.category.name.toUpperCase();
                     const discountPercentage = getDiscountPercentage(product.price, product.compareAtPrice);
                     const hasStock = Boolean(getCartSelection(product));
-                    const isEditorial = featuredIndexes.includes(index);
 
                     return (
-                        <article key={product.id} className={`product-card${isEditorial ? ' is-editorial' : ''}`}>
+                        <article key={product.id} className="product-card">
                             <div className="product-image-wrapper">
-                                {discountPercentage && (
-                                    <span className="product-discount">-{discountPercentage}%</span>
-                                )}
-                                {primaryImage && (
-                                    <Image
-                                        src={primaryImage.url}
-                                        alt={product.name}
-                                        className="product-image product-image-primary"
-                                        fill
-                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                    />
-                                )}
+                                <Link href={`/producto/${product.slug}`} className="product-image-link" aria-label={`Ver ${product.name}`}>
+                                    {discountPercentage && (
+                                        <span className="product-discount">-{discountPercentage}%</span>
+                                    )}
+                                    {primaryImage && (
+                                        <Image
+                                            src={primaryImage.url}
+                                            alt={product.name}
+                                            className="product-image product-image-primary"
+                                            fill
+                                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                        />
+                                    )}
 
-                                {hoverImage && hoverImage.id !== primaryImage?.id && (
-                                    <Image
-                                        src={hoverImage.url}
-                                        alt={product.name}
-                                        className="product-image product-image-hover"
-                                        fill
-                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                                    />
-                                )}
+                                    {hoverImage && hoverImage.id !== primaryImage?.id && (
+                                        <Image
+                                            src={hoverImage.url}
+                                            alt=""
+                                            className="product-image product-image-hover"
+                                            fill
+                                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                        />
+                                    )}
+                                </Link>
 
                                 <button
                                     type="button"
@@ -208,8 +209,13 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
             </div>
 
             {hasPagination && (
-                <nav className="products-pagination" aria-label="Paginación de productos">
-                    {currentPage === 1 ? (
+                <div className="products-pagination-wrapper">
+                    <div className="products-pagination-summary">
+                        <p>Mostrando {firstProduct}–{lastProduct} de {totalProducts} productos</p>
+                    </div>
+
+                    <nav className="products-pagination" aria-label="Paginación de productos">
+                        {currentPage === 1 ? (
                         <button
                             type="button"
                             className="products-pagination-button"
@@ -218,7 +224,7 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
                         >
                             <MdKeyboardArrowLeft />
                         </button>
-                    ) : (
+                        ) : (
                         <Link
                             href={buildPaginationHref(currentPage - 1)}
                             scroll={false}
@@ -227,12 +233,15 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
                         >
                             <MdKeyboardArrowLeft />
                         </Link>
-                    )}
+                        )}
 
-                    {Array.from({ length: totalPages }, (_, index) => {
-                        const page = index + 1;
+                        {visiblePages.map((page, index) => {
+                        const previousPage = visiblePages[index - 1];
 
-                        return (
+                        return [
+                            previousPage && page - previousPage > 1
+                                ? <span key={`ellipsis-${page}`} className="products-pagination-ellipsis" aria-hidden="true">…</span>
+                                : null,
                             <Link
                                 key={page}
                                 href={buildPaginationHref(page)}
@@ -242,10 +251,10 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
                             >
                                 {page}
                             </Link>
-                        );
-                    })}
+                        ];
+                        })}
 
-                    {currentPage === totalPages ? (
+                        {currentPage === totalPages ? (
                         <button
                             type="button"
                             className="products-pagination-button"
@@ -254,7 +263,7 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
                         >
                             <MdKeyboardArrowRight />
                         </button>
-                    ) : (
+                        ) : (
                         <Link
                             href={buildPaginationHref(currentPage + 1)}
                             scroll={false}
@@ -263,8 +272,9 @@ export const ProductsGrid = ({ products, featuredIndexes = [], pagination, filte
                         >
                             <MdKeyboardArrowRight />
                         </Link>
-                    )}
-                </nav>
+                        )}
+                    </nav>
+                </div>
             )}
         </div>
     )

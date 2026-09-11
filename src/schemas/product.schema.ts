@@ -12,6 +12,7 @@ export const ProductFormSchema = z.object({
     name: z.string().min(2, "El nombre es obligatorio").max(100),
     slug: z.string().min(2, "El slug es obligatorio"),
     description: z.string().nullable().optional(),
+    sizeGuide: z.string().trim().max(5000, 'La guía admite hasta 5000 caracteres').nullable().optional(),
     price: z.number().positive("El precio debe ser un número positivo"),
     compareAtPrice: z.number().min(0, "El precio anterior no puede ser negativo").nullable().optional(),
     gender: GenderEnum,

@@ -4,16 +4,35 @@ import { ProductWithRelations } from '@/types';
 import { useProductModalStore } from '@/store/product.store';
 import { ProductModal } from '../productModal/ProductModal';
 import { ProductsTable } from '../productsTable/ProductsTable';
+import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import './_productSection.scss';
 
 interface Props {
     products: ProductWithRelations[];
+    initialEditId?: string;
 }
 
-export const ProductSection = ({ products }: Props) => {
+export const ProductSection = ({ products, initialEditId }: Props) => {
+    const router = useRouter();
+    const openedFromUrl = useRef(false);
     const isOpenProduct = useProductModalStore((state) => state.isOpen);
     const closeProduct = useProductModalStore((state) => state.close);
     const openCreateProduct = useProductModalStore((state) => state.openCreate);
+    const openEditProduct = useProductModalStore((state) => state.openEdit);
+
+    useEffect(() => {
+        if (!initialEditId || openedFromUrl.current) return;
+        const product = products.find((item) => item.id === initialEditId);
+        if (!product) return;
+        openedFromUrl.current = true;
+        openEditProduct(product);
+    }, [initialEditId, openEditProduct, products]);
+
+    const handleClose = () => {
+        closeProduct();
+        if (initialEditId) router.replace('/admin/productos', { scroll: false });
+    };
 
     return (
         <>
@@ -24,7 +43,7 @@ export const ProductSection = ({ products }: Props) => {
                 </div>
                 <button className="productos-button" onClick={openCreateProduct}>+ Nuevo Producto</button>
             </div>
-            <ProductModal isOpen={isOpenProduct} onClose={closeProduct} />
+            <ProductModal isOpen={isOpenProduct} onClose={handleClose} />
             <ProductsTable products={products} />
         </>
     )

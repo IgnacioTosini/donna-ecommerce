@@ -10,6 +10,8 @@ import { SortDirection, useSortableTable } from '@/hooks/useSortableTable';
 import './_categoriesTable.scss';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/admin/shared/Pagination';
 
 interface Props {
     categories: Category[];
@@ -64,6 +66,7 @@ export const CategoriesTable = ({ categories }: Props) => {
             { key: 'products', accessor: getCategoryProductsCount, defaultDirection: 'desc' },
         ],
     });
+    const pagination = usePagination(sortedCategories);
 
     const handleDeleteCategory = async (category: Category) => {
         const result = await deleteCategoryWithImage(category.id);
@@ -77,7 +80,7 @@ export const CategoriesTable = ({ categories }: Props) => {
     };
     return (
         <div className="categories-table-wrapper">
-            <SearchBar placeholder="Buscar categoría..." query={query} onChange={setQuery} />
+            <SearchBar placeholder="Buscar categoría..." query={query} onChange={value => { setQuery(value); pagination.resetPage(); }} />
             <table className="categories-table">
                 <thead className="categories-table-header">
                     <tr className="categories-table-row">
@@ -89,7 +92,7 @@ export const CategoriesTable = ({ categories }: Props) => {
                     </tr>
                 </thead>
                 <tbody className="categories-table-body">
-                    {sortedCategories.map((category) => {
+                    {pagination.paginatedItems.map((category) => {
                         const imageUrl = category.imageUrl || '/logo.jpg';
                         const productsCount = getCategoryProductsCount(category);
 
@@ -142,6 +145,7 @@ export const CategoriesTable = ({ categories }: Props) => {
                     No se encontraron categorías.
                 </p>
             )}
+            <Pagination currentPage={pagination.currentPage} pageSize={pagination.pageSize} totalItems={pagination.totalItems} totalPages={pagination.totalPages} onPageChange={pagination.setCurrentPage} onPageSizeChange={pagination.setPageSize} />
         </div>
     )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useBusiness } from '@/components/layout/BusinessProvider';
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MouseEvent, useEffect, useRef, useState } from "react";
@@ -15,6 +16,7 @@ import { useNavbarSearch } from "./useNavbarSearch";
 import "./_navbar.scss";
 
 export default function Navbar() {
+    const { business } = useBusiness();
     const pathname = usePathname()
     const navbarRef = useRef<HTMLElement>(null)
     const iconRef = useRef<HTMLSpanElement>(null)
@@ -180,7 +182,7 @@ export default function Navbar() {
                 />
             )}
             <Link href="/" className="navbarBrand" onClick={handleBrandClick}>
-                <h1 className="navbarBrandText">Tienda Demo</h1>
+                <h1 className="navbarBrandText">{business.name}</h1>
             </Link>
             <NavbarActions
                 pathname={pathname}

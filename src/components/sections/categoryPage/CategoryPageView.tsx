@@ -20,7 +20,6 @@ type CategoryFilters = {
     sale?: string;
     sort?: string;
     page?: string;
-    pageSize?: string;
 };
 
 type Props = {

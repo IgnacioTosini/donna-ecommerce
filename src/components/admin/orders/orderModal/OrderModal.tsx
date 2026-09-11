@@ -1,5 +1,7 @@
 "use client";
 
+import { customerWhatsappUrl } from "@/lib/order-filters";
+import { getAllowedOrderStatuses } from '@/lib/order-stock-policy';
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IoMdClose } from "react-icons/io";
@@ -22,7 +24,6 @@ const statusLabels: Record<OrderStatus, string> = {
     CANCELLED: "Cancelado",
 };
 
-const statusOptions = Object.keys(statusLabels) as OrderStatus[];
 
 const formatCurrency = (value: number) =>
     new Intl.NumberFormat("es-AR", {
@@ -45,6 +46,7 @@ export const OrderModal = ({ isOpen, order, onClose }: Props) => {
     const [status, setStatus] = useState<OrderStatus>(order?.status ?? "PENDING");
 
     if (!isOpen || !order) return null;
+    const statusOptions = getAllowedOrderStatuses(order.status);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -94,6 +96,8 @@ export const OrderModal = ({ isOpen, order, onClose }: Props) => {
                         </div>
                     </section>
 
+                    <p>{order.stockDeducted ? 'Este pedido ya tiene stock descontado.' : 'Solicitud pendiente sin reserva de stock. Al confirmar se verifican y descuentan las unidades.'}</p>
+                    {customerWhatsappUrl(order.phone, order.id) ? <a href={customerWhatsappUrl(order.phone, order.id)!} target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a> : <p>Para abrir WhatsApp, completá el teléfono con código de país (por ejemplo, +54…) y guardá.</p>}
                     <form className="order-modal-form" onSubmit={handleSubmit}>
                         <label className="order-modal-field">
                             <span>Nombre del cliente</span>

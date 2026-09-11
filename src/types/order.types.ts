@@ -14,6 +14,7 @@ export interface Order {
     total: number;
 
     status: OrderStatus;
+    stockDeducted: boolean;
 
     createdAt: Date;
     updatedAt: Date;

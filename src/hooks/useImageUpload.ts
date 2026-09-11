@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { ImageService } from '@/services/ImageService';
 import { toast } from 'react-toastify';
+import type { ImageUploadFolder } from '@/lib/image-upload-folders';
 
 type UploadOptions = {
+    folder: ImageUploadFolder;
     maxWidth: number;
     maxHeight: number;
     format?: 'jpeg' | 'webp' | 'png';

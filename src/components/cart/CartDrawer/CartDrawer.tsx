@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useBusiness } from '@/components/layout/BusinessProvider';
 import { IoClose, IoTrashOutline } from "react-icons/io5";
 import { useCartStore } from "@/store/cart.store";
 import { CheckoutModal } from "@/components/checkout/CheckoutModal/CheckoutModal";
@@ -18,6 +19,7 @@ const formatPrice = (price: number) =>
     }).format(price);
 
 export function CartDrawer() {
+    const { business, preview } = useBusiness();
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     const items = useCartStore((state) => state.items);
     const totalItems = useCartStore((state) => state.totalItems);
@@ -29,8 +31,11 @@ export function CartDrawer() {
     const clearCart = useCartStore((state) => state.clearCart);
 
     const handleCheckoutSubmit = async (data: CheckoutData) => {
+        if (preview) { toast.info('La vista previa no permite crear pedidos.'); return false; }
         const result = await handleWhatsappCheckout({
             ...data,
+            whatsappPhone: business.whatsapp,
+            businessName: business.name,
             items,
             subtotal,
         }).catch(() => ({

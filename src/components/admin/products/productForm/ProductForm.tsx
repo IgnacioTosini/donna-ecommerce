@@ -208,6 +208,7 @@ export default function ProductForm() {
                 name: product.name,
                 slug: product.slug,
                 description: product.description ?? '',
+                sizeGuide: product.sizeGuide ?? '',
                 price: Number(product.price),
                 compareAtPrice: product.compareAtPrice !== null && product.compareAtPrice !== undefined
                     ? Number(product.compareAtPrice)
@@ -285,6 +286,7 @@ export default function ProductForm() {
 
         try {
             newImages = await image.uploadMany({
+                folder: 'productos',
                 enableOptimization: true,
                 format: 'webp',
                 maxWidth: 1200,
@@ -479,6 +481,11 @@ export default function ProductForm() {
                 />
             </div>
 
+            <div className="form-group">
+                <label htmlFor="product-size-guide">Guía de talles y medidas</label>
+                <textarea id="product-size-guide" rows={7} maxLength={5000} placeholder="Indicá las medidas reales por talle, la unidad (cm) y cómo medir. Dejalo vacío para ocultar la guía." {...register('sizeGuide')} />
+                {errors.sizeGuide && <span>{errors.sizeGuide.message}</span>}
+            </div>
             <div className="form-row">
                 <div className="form-group">
                     <label>Precio ($)</label>
