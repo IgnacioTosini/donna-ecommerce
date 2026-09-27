@@ -1,18 +1,17 @@
-import Link from 'next/link';
 import { Category } from '@/types';
-import { BuildFilterHref, CategoryFilters } from '../categoryFilterSidebar.types';
+import { CategoryFilters } from '../categoryFilterSidebar.types';
 import './_categoryFilterSection.scss';
 
 type Props = {
     categories: Category[];
     filters: CategoryFilters;
-    buildFilterHref: BuildFilterHref;
+    onChange: (filters: Partial<CategoryFilters>) => void;
 };
 
 export const CategoryFilterSection = ({
     categories,
     filters,
-    buildFilterHref,
+    onChange,
 }: Props) => (
     <>
         <div className="category-filter-section">
@@ -20,20 +19,20 @@ export const CategoryFilterSection = ({
             <ul className="category-filter-sidebar-list">
                 {categories.map((category) => (
                     <li key={category.id} className="category-filter-sidebar-item">
-                        <Link
-                            href={buildFilterHref(
+                        <button
+                            type="button"
+                            onClick={() => onChange(
                                 {
                                     category: filters.category === category.slug
                                         ? undefined
                                         : category.slug,
-                                },
-                                { resetPrice: true }
+                                }
                             )}
-                            scroll={false}
+                            aria-pressed={filters.category === category.slug}
                             className={`category-filter-sidebar-link ${filters.category === category.slug ? 'is-active' : ''}`}
                         >
                             {category.name}
-                        </Link>
+                        </button>
                     </li>
                 ))}
             </ul>
@@ -43,40 +42,40 @@ export const CategoryFilterSection = ({
             <h2 className="category-filter-sidebar-title">Colección</h2>
             <ul className="category-filter-sidebar-list">
                 <li className="category-filter-sidebar-item">
-                    <Link
-                        href={buildFilterHref(
-                            { sort: filters.sort === 'newest' ? undefined : 'newest' },
-                            { resetPrice: true }
+                    <button
+                        type="button"
+                        onClick={() => onChange(
+                            { sort: filters.sort === 'newest' ? undefined : 'newest' }
                         )}
-                        scroll={false}
+                        aria-pressed={filters.sort === 'newest'}
                         className={`category-filter-sidebar-link ${filters.sort === 'newest' ? 'is-active' : ''}`}
                     >
                         Nuevos Ingresos
-                    </Link>
+                    </button>
                 </li>
                 <li className="category-filter-sidebar-item">
-                    <Link
-                        href={buildFilterHref(
-                            { featured: filters.featured ? undefined : 'true' },
-                            { resetPrice: true }
+                    <button
+                        type="button"
+                        onClick={() => onChange(
+                            { featured: filters.featured ? undefined : 'true' }
                         )}
-                        scroll={false}
+                        aria-pressed={Boolean(filters.featured)}
                         className={`category-filter-sidebar-link ${filters.featured ? 'is-active' : ''}`}
                     >
                         Destacados
-                    </Link>
+                    </button>
                 </li>
                 <li className="category-filter-sidebar-item">
-                    <Link
-                        href={buildFilterHref(
-                            { sale: filters.sale ? undefined : 'true' },
-                            { resetPrice: true }
+                    <button
+                        type="button"
+                        onClick={() => onChange(
+                            { sale: filters.sale ? undefined : 'true' }
                         )}
-                        scroll={false}
+                        aria-pressed={Boolean(filters.sale)}
                         className={`category-filter-sidebar-link ${filters.sale ? 'is-active' : ''}`}
                     >
                         Rebajas
-                    </Link>
+                    </button>
                 </li>
             </ul>
         </div>

@@ -6,12 +6,14 @@ type Props = {
     minPrice: number;
     maxAvailablePrice: number;
     selectedMaxPrice: number;
+    onChange: (price: number) => void;
 };
 
 export const PriceRangeControl = ({
     minPrice,
     maxAvailablePrice,
     selectedMaxPrice,
+    onChange,
 }: Props) => {
     const hasPriceRange = maxAvailablePrice > 0;
 
@@ -23,7 +25,8 @@ export const PriceRangeControl = ({
                 min={minPrice}
                 max={maxAvailablePrice}
                 step="1"
-                defaultValue={selectedMaxPrice}
+                value={selectedMaxPrice}
+                onChange={(event) => onChange(Number(event.target.value))}
                 className="category-filter-sidebar-range"
                 disabled={!hasPriceRange}
             />
@@ -32,13 +35,6 @@ export const PriceRangeControl = ({
                 <strong>Hasta ${formatPrice(selectedMaxPrice)}</strong>
                 <span>${formatPrice(maxAvailablePrice)}</span>
             </div>
-            <button
-                type="submit"
-                className="category-filter-price-button"
-                disabled={!hasPriceRange}
-            >
-                Aplicar
-            </button>
         </>
     );
 };

@@ -317,3 +317,42 @@
         min-height: auto;
     }
 }
+
+.products-grid-empty {
+    grid-column: 1 / -1;
+    padding: 3rem 1.25rem;
+    border: 1px solid $tertiary-color;
+    border-radius: 14px;
+    background: $surface-muted;
+    text-align: center;
+    font-family: $font-family;
+
+    h2 {
+        margin: 0 0 0.75rem;
+        color: $secondary-color;
+        font-size: $font-size-medium;
+        line-height: 1.4;
+    }
+
+    p {
+        margin: 0;
+        color: $color-text-secondary;
+        line-height: 1.5;
+    }
+}
+
+.products-grid-empty-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 1.25rem;
+    padding: 0.75rem 1.25rem;
+    background: $secondary-color;
+    color: $primary-color;
+    text-decoration: none;
+
+    &:focus-visible {
+        @include focus-ring;
+    }
+}

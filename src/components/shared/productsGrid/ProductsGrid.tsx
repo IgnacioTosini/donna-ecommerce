@@ -105,6 +105,7 @@ export const ProductsGrid = ({ products, pagination, filters = {} }: Props) => {
     const pageSize = pagination?.pageSize ?? products.length;
     const firstProduct = totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
     const lastProduct = Math.min(currentPage * pageSize, totalProducts);
+    const hasActiveFilters = Object.entries(filters).some(([key, value]) => key !== 'sort' && Boolean(value));
     const hasPagination = Boolean(pagination && totalProducts > 0);
 
     const visiblePages = Array.from({ length: totalPages }, (_, index) => index + 1)
@@ -149,6 +150,21 @@ export const ProductsGrid = ({ products, pagination, filters = {} }: Props) => {
     return (
         <div className="products-grid-container">
             <div ref={gridRef} className="products-grid">
+                {products.length === 0 && (
+                    <div className="products-grid-empty" role="status">
+                        <h2>{hasActiveFilters
+                            ? 'No encontramos productos con los filtros seleccionados'
+                            : 'No hay productos disponibles por el momento'}</h2>
+                        <p>{hasActiveFilters
+                            ? 'Probá cambiar o quitar algunos filtros para ver más opciones.'
+                            : 'Volvé pronto para descubrir nuevos productos.'}</p>
+                        {hasActiveFilters && (
+                            <Link href="/categoria" scroll={false} className="products-grid-empty-link">
+                                Limpiar filtros
+                            </Link>
+                        )}
+                    </div>
+                )}
                 {products.map((product) => {
                     const primaryImage = product.images[0];
                     const hoverImage = product.images[1] ?? primaryImage;

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ReactNode } from 'react';
 import { FiX } from 'react-icons/fi';
 
@@ -7,6 +6,8 @@ type Props = {
     activeFilterCount: number;
     children: ReactNode;
     onClose: () => void;
+    onApply: () => void;
+    onClear: () => void;
 };
 
 export const CategoryFilterMobileSheet = ({
@@ -14,6 +15,8 @@ export const CategoryFilterMobileSheet = ({
     activeFilterCount,
     children,
     onClose,
+    onApply,
+    onClear,
 }: Props) => (
     <div className={`category-filter-mobile-sheet ${isOpen ? 'is-open' : ''}`}>
         <button
@@ -46,32 +49,24 @@ export const CategoryFilterMobileSheet = ({
                 </button>
             </div>
 
-            <div
-                className="category-filter-sheet-body"
-                onClick={(event) => {
-                    if (event.target instanceof Element && event.target.closest('a')) {
-                        onClose();
-                    }
-                }}
-            >
+            <div className="category-filter-sheet-body">
                 {children}
             </div>
 
             <div className="category-filter-sheet-footer">
-                <Link
-                    href="/categoria"
-                    scroll={false}
+                <button
+                    type="button"
                     className="category-filter-clear-button"
-                    onClick={onClose}
+                    onClick={onClear}
                 >
                     Limpiar
-                </Link>
+                </button>
                 <button
                     type="button"
                     className="category-filter-view-button"
-                    onClick={onClose}
+                    onClick={onApply}
                 >
-                    Ver productos
+                    Aplicar filtros
                 </button>
             </div>
         </aside>

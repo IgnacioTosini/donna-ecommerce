@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { BuildFilterHref, CategoryFilters } from '../categoryFilterSidebar.types';
+import { CategoryFilters } from '../categoryFilterSidebar.types';
 import '../categoryFilterSection/_categoryFilterSection.scss';
 
 const genderOptions = [
@@ -19,32 +18,32 @@ const genderOptions = [
 
 type Props = {
     filters: CategoryFilters;
-    buildFilterHref: BuildFilterHref;
+    onChange: (filters: Partial<CategoryFilters>) => void;
 };
 
 export const GenderFilterSection = ({
     filters,
-    buildFilterHref,
+    onChange,
 }: Props) => (
     <div className="category-filter-section">
         <h2 className="category-filter-sidebar-title">Género</h2>
         <ul className="category-filter-sidebar-list">
             {genderOptions.map((gender) => (
                 <li key={gender.value} className="category-filter-sidebar-item">
-                    <Link
-                        href={buildFilterHref(
+                    <button
+                        type="button"
+                        onClick={() => onChange(
                             {
                                 gender: filters.gender === gender.value
                                     ? undefined
                                     : gender.value,
-                            },
-                            { resetPrice: true }
+                            }
                         )}
-                        scroll={false}
+                        aria-pressed={filters.gender === gender.value}
                         className={`category-filter-sidebar-link ${filters.gender === gender.value ? 'is-active' : ''}`}
                     >
                         {gender.label}
-                    </Link>
+                    </button>
                 </li>
             ))}
         </ul>

@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Category } from '@/types';
 import type { ProductFilterOptions } from '@/app/actions/product.action';
 import { CategoryFilterMobileBar } from './CategoryFilterMobileBar';
@@ -17,19 +19,35 @@ interface Props {
     filters?: CategoryFilters;
 }
 
+const emptyFilters: CategoryFilters = {};
+
 export const CategoryFilterSidebar = ({
     categories,
     options,
-    filters = {},
+    filters = emptyFilters,
 }: Props) => {
     const mobileFilterSheet = useMobileFilterSheet();
+    const router = useRouter();
+    const [draftFilters, setDraftFilters] = useState(filters);
+    const [previousFilters, setPreviousFilters] = useState(filters);
+
+    if (previousFilters !== filters) {
+        setPreviousFilters(filters);
+        setDraftFilters(filters);
+    }
+
+    const applyFilters = () => {
+        router.push(buildFilterHref(draftFilters, {}, emptyFilters), { scroll: false });
+        mobileFilterSheet.close();
+    };
 
     const buildFilterHref = (
         nextFilters: Partial<CategoryFilters>,
-        options: { resetPrice?: boolean } = {}
+        options: { resetPrice?: boolean } = {},
+        baseFilters: CategoryFilters = filters
     ) => {
         const params = new URLSearchParams();
-        const mergedFilters = { ...filters, ...nextFilters };
+        const mergedFilters = { ...baseFilters, ...nextFilters };
 
         if (options.resetPrice) {
             delete mergedFilters.maxPrice;
@@ -48,27 +66,33 @@ export const CategoryFilterSidebar = ({
     };
     const filterOptions = useCategoryFilterOptions({
         options,
-        filters,
+        filters: draftFilters,
     });
+    const desktopFilterOptions = useCategoryFilterOptions({ options, filters });
     const activeFilterChips = buildCategoryFilterChips({
         categories,
         filters,
-        selectedMaxPrice: filterOptions.selectedMaxPrice,
+        selectedMaxPrice: filters.maxPrice ? Number(filters.maxPrice) : options.maxPrice,
         buildFilterHref,
     });
     const activeFilterCount = activeFilterChips.length;
 
-    const renderFilterSections = () => (
+    const renderFilterSections = (applyImmediately = false) => (
         <CategoryFilterSections
             categories={categories}
-            filters={filters}
+            filters={applyImmediately ? filters : draftFilters}
             sortedSizes={filterOptions.sortedSizes}
             sortedColors={filterOptions.sortedColors}
             minPrice={filterOptions.minPrice}
             maxAvailablePrice={filterOptions.maxAvailablePrice}
-            selectedMaxPrice={filterOptions.selectedMaxPrice}
-            buildFilterHref={buildFilterHref}
-            onApplyPrice={mobileFilterSheet.close}
+            selectedMaxPrice={applyImmediately ? desktopFilterOptions.selectedMaxPrice : filterOptions.selectedMaxPrice}
+            onChange={(changes) => {
+                if (applyImmediately) {
+                    router.push(buildFilterHref(changes), { scroll: false });
+                } else {
+                    setDraftFilters((current) => ({ ...current, ...changes }));
+                }
+            }}
         />
     );
 
@@ -81,13 +105,15 @@ export const CategoryFilterSidebar = ({
             />
 
             <aside className="category-filter-sidebar category-filter-sidebar-desktop">
-                {renderFilterSections()}
+                {renderFilterSections(true)}
             </aside>
 
             <CategoryFilterMobileSheet
                 isOpen={mobileFilterSheet.isOpen}
                 activeFilterCount={activeFilterCount}
                 onClose={mobileFilterSheet.close}
+                onApply={applyFilters}
+                onClear={() => setDraftFilters({ pageSize: draftFilters.pageSize })}
             >
                 {renderFilterSections()}
             </CategoryFilterMobileSheet>

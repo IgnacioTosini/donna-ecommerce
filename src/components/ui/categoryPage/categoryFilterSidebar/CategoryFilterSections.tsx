@@ -1,10 +1,12 @@
 import { Category } from '@/types';
+import { colorsMatch } from '@/utils/colorHelpers';
+import { normalizeSizeValue, sizesMatch } from '@/utils/sizeHelpers';
 import { CategoryFilterSection } from './categoryFilterSection/CategoryFilterSection';
 import { ColorFilterSection } from './colorFilterSection/ColorFilterSection';
 import { GenderFilterSection } from './genderFilterSection/GenderFilterSection';
 import { PriceFilterSection } from './priceFilterSection/PriceFilterSection';
 import { SizeFilterSection } from './sizeFilterSection/SizeFilterSection';
-import { BuildFilterHref, CategoryFilters } from './categoryFilterSidebar.types';
+import { CategoryFilters } from './categoryFilterSidebar.types';
 
 type Props = {
     categories: Category[];
@@ -14,8 +16,7 @@ type Props = {
     minPrice: number;
     maxAvailablePrice: number;
     selectedMaxPrice: number;
-    buildFilterHref: BuildFilterHref;
-    onApplyPrice?: () => void;
+    onChange: (filters: Partial<CategoryFilters>) => void;
 };
 
 export const CategoryFilterSections = ({
@@ -26,35 +27,33 @@ export const CategoryFilterSections = ({
     minPrice,
     maxAvailablePrice,
     selectedMaxPrice,
-    buildFilterHref,
-    onApplyPrice,
+    onChange,
 }: Props) => (
     <>
         <GenderFilterSection
             filters={filters}
-            buildFilterHref={buildFilterHref}
+            onChange={onChange}
         />
         <CategoryFilterSection
             categories={categories}
             filters={filters}
-            buildFilterHref={buildFilterHref}
+            onChange={onChange}
         />
         <SizeFilterSection
             sizes={sortedSizes}
             filters={filters}
-            buildFilterHref={buildFilterHref}
+            onSelectSize={(size) => onChange({ size: sizesMatch(filters.size, size) ? undefined : normalizeSizeValue(size) })}
         />
         <ColorFilterSection
             colors={sortedColors}
             filters={filters}
-            buildFilterHref={buildFilterHref}
+            onSelectColor={(color) => onChange({ color: colorsMatch(filters.color, color) ? undefined : color })}
         />
         <PriceFilterSection
-            filters={filters}
             minPrice={minPrice}
             maxAvailablePrice={maxAvailablePrice}
             selectedMaxPrice={selectedMaxPrice}
-            onApply={onApplyPrice}
+            onChange={(price) => onChange({ maxPrice: String(price) })}
         />
     </>
 );
